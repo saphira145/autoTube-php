@@ -17,6 +17,7 @@ Route::get('/', function () {
 
 Route::get('youtube/index', 'YoutubeController@index');
 Route::get('video/index', ['as' => 'video.index', 'uses' => 'VideoController@index']);
+Route::post('video/getVideoList', ['as' => 'video.getVideoList', 'uses' => 'VideoController@getVideoList']);
 
 /*
 |--------------------------------------------------------------------------

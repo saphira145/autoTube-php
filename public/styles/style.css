@@ -4,13 +4,16 @@ body {
 
 .jumbotron {
     background: #fff;
+    border-radius: 0!important;
 }
 .image-preview {
 	background: url('/images/default.jpg') no-repeat center;
 	background-size: cover;
 	height: 100px;
 }
-
+.no-margin {
+    margin: 0;
+}
 .ajax-load {
     position: relative;
 }
@@ -157,3 +160,24 @@ fieldset[disabled] .btn-main.active {
 
 /*end btn-main*/
 
+.pagination>.active>a, 
+.pagination>.active>a:focus, 
+.pagination>.active>a:hover, 
+.pagination>.active>span, 
+.pagination>.active>span:focus, 
+.pagination>.active>span:hover {
+    background-color: #E28181;
+    border-color: #E28181;
+}
+
+.action {
+    color: #E28181;
+}
+
+#video-table thead tr {
+    background: #E28181;
+    color: #fff;
+}
+#video-table th, #video-table td {
+    border: none;
+}

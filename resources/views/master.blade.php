@@ -8,7 +8,8 @@
 
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/t/dt/dt-1.10.11/datatables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.11/css/dataTables.bootstrap.min.css"/>
+    
     <!--STYLES-->
     <link rel="stylesheet" href="/styles/bootstrap-datetimepicker.min.css">
     <link rel="stylesheet" href="/styles/lightbox.min.css">
@@ -16,14 +17,14 @@
     <!--STYLES END-->
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/t/dt/dt-1.10.11/datatables.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.11/js/dataTables.bootstrap.min.js"></script>
 
     <script src="/js/dependencies/moment.min.js"></script>
     <script src="/js/dependencies/bootstrap-datetimepicker.min.js"></script>
     <script src="/js/dependencies/mustache.min.js"></script>
     <script src="/js/dependencies/videoLightning.js"></script>
-    <script src="/js/manageTable.js"></script>
     
 </head>
 
@@ -71,6 +72,8 @@
             @yield('content')
         </div>
     </div>
+    
+    <script src="/js/video.js"></script>
 </body>
 
 </html>
