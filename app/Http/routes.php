@@ -16,7 +16,7 @@ Route::get('/', function () {
 });
 
 Route::get('youtube/index', 'YoutubeController@index');
-Route::get('media/index', 'MediaController@index');
+Route::get('video/index', ['as' => 'video.index', 'uses' => 'VideoController@index']);
 
 /*
 |--------------------------------------------------------------------------

@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Media extends Model {
     
+    /**
+     * Create thumbnail by resize, add text
+     * @param type $image
+     * @param type $text
+     * @return type
+     */
     public function createThumbnail($image, $text) {
         $image->resize(1280, 720);
         
@@ -24,5 +30,25 @@ class Media extends Model {
         });
         
         return $image;
+    }
+    
+    
+    /**
+     * Create video from image and audio
+     * @param type $imageUrl
+     * @param type $audioUrl
+     * @param type $output
+     * @return boolean
+     * @throws \Exception
+     */
+    public function createVideo($imageUrl, $audioUrl, $output) {
+        $command = "ffmpeg -loop 1 -i {$imageUrl} -i {$audioUrl} -c:v libx264 -c:a aac -strict experimental -b:a 192k -shortest {$output}";
+        
+        if ( exec($command, $response) ) {
+            return true;
+        } else {
+            throw new \Exception(implode("\n", $response));
+        }
+        
     }
 }
