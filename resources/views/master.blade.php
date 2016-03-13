@@ -25,7 +25,11 @@
     <script src="/js/dependencies/bootstrap-datetimepicker.min.js"></script>
     <script src="/js/dependencies/mustache.min.js"></script>
     <script src="/js/dependencies/videoLightning.js"></script>
-    
+    <script src="/js/dependencies/jquery.ui.widget.js"></script>
+    <script src="/js/dependencies/jquery.iframe-transport.js"></script>
+    <script src="/js/dependencies/jquery.fileupload.js"></script>
+    <script src="/js/dependencies/jquery.form.min.js"></script>
+   
 </head>
 
 <body>

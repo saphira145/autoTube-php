@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Media extends Model {
     
+    protected $table = 'medias';
+
+    protected $fillable  = ['file_path', 'type'];
+    
     /**
      * Create thumbnail by resize, add text
      * @param type $image
@@ -50,5 +54,21 @@ class Media extends Model {
             throw new \Exception(implode("\n", $response));
         }
         
+    }
+    
+    /**
+     * get image type allow
+     * @return type
+     */
+    public function imageType() {
+        return ['jpg', 'png'];
+    }
+    
+    /**
+     * Get audio type allow
+     * @return type
+     */
+    public function audioType() {
+        return ['mp3'];
     }
 }

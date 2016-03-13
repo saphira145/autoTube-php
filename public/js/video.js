@@ -32,93 +32,195 @@ var VideoTable = $('#video-table').DataTable({
 
 var Video = (function() {
     
-    var formFacility = $(".form-facility");
+    var wrapperTable = $(".wrapper-table");
     var body = $('body');
-
-    body.on('click', '.form-facility .save-new', saveFacility);
-    body.on('click', '#facility-table .delete-facility', showDeleteFacility);
-    body.on('click', '#delete-modal .delete-facility-modal', deleteFacility);
-    body.on('click', '.form-facility .save-update', updateFacility);
+    var delimter = "{{=<% %>=}}";
+    var createModal = $("#create-video-modal");
     
-    function saveFacility() {
-        var data = formFacility.find('.add-facility-form').serialize();
-        var url = '/facility/saveFacility';
-
+    body.on('click', '.wrapper-table .create-video-modal-button', createVideo);
+    body.on('click', '#create-video-modal .btn-upload-images', uploadImage);
+    body.on('click', '#create-video-modal .btn-upload-audio', uploadAudio);
+    body.on('click', '.remove', removeImage);
+    body.on('click', '.item .remove-audio', removeAudio);
+    body.on('click', '#create-video-modal #save-video', saveVideo);
+    
+    function uploadImage() {
+        $(".images-upload").click();
+    }
+    
+    function uploadAudio() {
+        $(".audio-upload").click();
+    }
+    
+    
+    function createVideo() {
+        var html = $("#create-form-template").html();
+        var template = Mustache.render(html);
+        var form = createModal.find(".create-form");
+        form.html(template);
+        
+        bindImagesUpload();
+        bindAudioUpload();
+    }
+    
+    
+    function bindImagesUpload() {
+        $(".images-upload").fileupload({
+            dataType: 'json',
+            done: function (e, data) {
+                var res = data.result;
+                
+                if (res.status === 1) {
+                    var html = $("#image-item").html();
+                    var template = Mustache.render(delimter + html, res.fileInfo);
+                    var container = $(".upload-image-zone").find(".row");
+                    container.append(template);
+                    
+                    checkNoData(container, $(".item"));
+                }
+                
+                if (res.status === 0) {
+                    
+                }
+            },
+            progressall: function (e, data) {
+                
+            }
+        });
+    }
+    
+    function bindAudioUpload() {
+        $(".audio-upload").fileupload({
+            dataType: 'json',
+            done: function (e, data) {
+                var res = data.result;
+                
+                if (res.status === 1) {
+                    var html = $("#audio-item").html();
+                    var template = Mustache.render(delimter + html, res.fileInfo);
+                    console.log(template)
+                    var container = $(".upload-audio-zone").find(".row");
+                    container.append(template);
+                    
+                    checkNoData(container, $(".item"));
+                }
+                
+                if (res.status === 0) {
+                    
+                }
+            },
+            progressall: function (e, data) {
+                
+            }
+        });
+    }
+    
+    function removeImage() {
+        var fileName = $(this).attr('fileName');
+        var self = $(this);
+        var container = $(".upload-image-zone").find(".row");
         $.ajax({
-            url: url,
-            data: data,
+            url: '/media/remove',
             type: 'POST',
-            success: function(response) {
-                if (response.status === 1 && response.hasOwnProperty('redirectUrl')) {
-                    window.location.replace(response.redirectUrl);
+            data: {fileName: fileName, type : 'image'},
+            beforeSend: function() {
+                
+            },
+            success: function(res) {
+                if (res.status === 1) {
+                    
+                    self.closest('.item').remove();
+                    checkNoData(container, $(".item"));
                 }
-
-                if (response.status === 0) {
-                    var errors = response.errors;
-
-                    formFacility.find('.error-msg').text('');
-                    $.each(errors, function(key, error) {
-                        var selectorError = formFacility.find('.' + key + '-error');
-                        selectorError.text(error[0].message);
-                    })
+                
+                if (res.status === 0) {
+                    
                 }
             }
-        })
-    }
-
-
-    function showDeleteFacility() {
-        var id = $(this).attr("rid");
-        console.log(id)
-        $("#delete-modal").attr('rid', id);
-    }
-
-    function deleteFacility() {
-        var id = $("#delete-modal").attr('rid');
-        
-        $.ajax({
-            url : '/facility/'+ id +'/destroy',
-            type: 'DELETE',
             
-            success: function(response) {
-                if (response.status === 1) {
-                    FacilityTable.ajax.reload(null, false);
-                    displayMessage(1, 'Facility is deleted successfully');
-                }
-                if (response.status === 0) {
-                    displayMessage(0, 'Something went wrong');
-                }
-            }
         })
-
     }
-
-    function updateFacility() {
-        
-        var id = $(this).attr('rid');
-        var url = '/facility/'+ id +'/update';
-        var data = formFacility.find('.edit-facility-form').serialize();
+    
+    function checkNoData(container, item) {
+        if ( container.find(item).length == 0 ) {
+            container.empty().append("<div class='no-data'>No data</div>");
+        } else {
+            container.find('.no-data').remove();
+        }
+    }
+    
+    function removeAudio() {
+        var fileName = $(this).attr("fileName");
+        var self = $(this);
+        var container = $(".upload-audio-zone").find(".row");
         
         $.ajax({
-            url: url,
-            type: 'PUT',
-            data: data,
-            success: function(response) {
-                if (response.status === 1) {
-                    window.location.replace(response.redirectUrl);
+            url: '/media/remove',
+            type: 'POST',
+            data: {fileName: fileName, type : 'audio'},
+            beforeSend: function() {
+                
+            },
+            success: function(res) {
+                if (res.status === 1) {
+                    
+                    self.closest('.item').remove();
+                    checkNoData(container, $(".item"));
                 }
-
-                if (response.status === 0) {
-                    if (response.hasOwnProperty('errors')) {
-                        $(".error-msg").text('');
-                        $.each(response.errors, function(key, error) {
-                            var selectorError = $('.' + key + '-error');
-                            selectorError.text(error[0].message);
-                        });
+            }
+            
+        })
+    }
+    
+    function saveVideo() {
+        var form = createModal.find(".create-form");
+        
+        $.ajax({
+            url: '/video/saveVideo',
+            type: 'POST',
+            data: form.serialize(),
+            beforeSend: function() {
+                createModal.find('.moda-content').addClass('ajax-load');
+            },
+            success: function(res) {
+                form.find(".error-msg").text('');
+                form.find(".has-error").removeClass('has-error');
+                
+                if (res.status === 1) {
+                    
+                }
+                
+                if (res.status === 0) {
+                    if (res.hasOwnProperty('errors')) {
+                        var errors = res.errors;
+                        for (var key in errors) {
+                            
+                            var ele = form.find(".error-" + key);
+                            ele.text(errors[key][0]);
+                            $("#" + key).closest(".form-group").addClass('has-error');
+                        }
+                        _focusErrorInput(form);
                     }
                 }
+            },
+            
+            complete: function() {
+                createModal.find('.moda-content').removeClass('ajax-load');
             }
         })
     }
-
+    
+    function _focusErrorInput(form) {
+        form.find(".has-error").find("input, text-area").each(function () {
+            $(this).focus();
+            return false;
+        })
+    }
+    
 })()
+
+
+$(document).ready(function() {
+    
+    
+});

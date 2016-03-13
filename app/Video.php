@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Video extends Model {
     
+    protected $fillable = ['title', 'description', 'loop', 'fade', 'audio', 'images'];
+
     public function getVideoList($sortOrder, $paginate, $search) {
         $query = $this;
         
@@ -29,5 +31,14 @@ class Video extends Model {
     public function getColumn($index) {
         $column = ['title', 'store_at'];
         return $column[$index];
+    }
+    
+    public function validateCreate() {
+        return [ 
+            'title' => 'required',
+            'description' => 'required',
+            'imagesPath' => 'required',
+            'audioPath' => 'required'
+        ];
     }
 }

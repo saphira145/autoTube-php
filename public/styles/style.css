@@ -1,5 +1,6 @@
 body {
     background: #f1f1f1;
+    color: #656565;
 }
 
 .jumbotron {
@@ -19,7 +20,7 @@ body {
 }
 .ajax-load::after {
     content: '';
-    background: url('/images/ajax-loader.gif') no-repeat center;
+    background: url('/images/ajax-load.gif') no-repeat center;
     position: absolute;
     top: 0;
     left: 0;
@@ -111,6 +112,10 @@ p.error-msg {
 
 /*btn-main*/
 
+.btn-default, .btn-primary, .btn-success, .btn-danger {
+    border-radius: 0;
+}
+
 .btn-main { 
   color: #FFFFFF; 
   background-color: #9B59B6; 
@@ -170,6 +175,16 @@ fieldset[disabled] .btn-main.active {
     border-color: #E28181;
 }
 
+/*modal*/
+.modal-header {
+    background-color: #f7f8f9;
+}
+.modal-footer {
+    background-color: #f7f8f9;
+}
+/*end modal*/
+
+
 .action {
     color: #E28181;
 }
@@ -181,3 +196,87 @@ fieldset[disabled] .btn-main.active {
 #video-table th, #video-table td {
     border: none;
 }
+
+/*video*/
+
+
+/*project*/
+.wrapper-upload {
+    border: 1px solid #337ab7;
+    padding: 15px;
+}
+
+.upload-zone {
+    border: 1px dashed #9B59B6;
+    padding: 15px;
+    /*cursor: pointer;*/
+}
+
+.no-data {
+    padding: 0 15px;
+}
+.upload-img {
+    background: url('/images/default.jpg') no-repeat center;
+    background-size: cover;
+    height: 110px;
+    box-shadow: 0 0 5px #E28181;
+    position: relative;
+    margin: 5px;
+    overflow: hidden;
+}
+
+.upload-img .action-image {
+    position: absolute;
+    top: -120%;
+    /*bottom: -100px;*/
+    font-size: 35px;
+    color: #fff;
+    transition: all 0.3s;
+}
+.upload-img:hover::after{
+    content: '';
+    position: absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    background: rgba(0, 0, 0, 0.5);
+}
+.upload-img:hover .action-image {
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 99;
+}
+
+.upload-img .view {
+    left: 20%;
+}
+
+.upload-img .remove {
+    right: 20%;
+}
+
+.upload-audio-zone .item{
+    position: relative;
+}
+.remove-audio {
+    font-size: 30px;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+.upload-zone .item {
+    padding-bottom: 15px;
+}
+.upload-image-zone {
+    max-height: 290px;
+    overflow-x: none;
+    overflow-y: auto;
+}
+.video-panel .panel-heading {
+    background: #E28181;
+    color: #fff;
+}
+
+/*end project*/
+/*end video*/

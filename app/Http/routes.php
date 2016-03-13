@@ -18,6 +18,11 @@ Route::get('/', function () {
 Route::get('youtube/index', 'YoutubeController@index');
 Route::get('video/index', ['as' => 'video.index', 'uses' => 'VideoController@index']);
 Route::post('video/getVideoList', ['as' => 'video.getVideoList', 'uses' => 'VideoController@getVideoList']);
+Route::post('video/saveVideo', ['as' => 'video.saveVideo', 'uses' => 'VideoController@saveVideo']);
+
+//Media
+Route::post('media/upload', ['as' => 'media.upload', 'uses' => 'MediaController@upload']);
+Route::post('media/remove', ['as' => 'media.remove', 'uses' => 'MediaController@remove']);
 
 /*
 |--------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 <!-- Modal -->
 <div id="create-video-modal" tabindex='-1' class="modal fade" role="dialog">
-  <div class="modal-dialog">
+  <div class="modal-dialog" style="width:80%">
 
     <!-- Modal content-->
     <div class="modal-content">
@@ -9,13 +9,13 @@
 			<h4 class="modal-title">Add video</h4>
 		</div>
 		<div class="modal-body" style="min-height:400px">
-			<form class="form-horizontal create-form">
+			<form class="form create-form">
 				
 			</form>
 		</div>
 		<div class="modal-footer">
 			<button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Close</button>
-			<button type="button" class="btn btn-success" id="save"><i class="fa fa-floppy-o"></i> Save</button>
+			<button type="button" class="btn btn-main" id="save-video"><i class="fa fa-floppy-o"></i> Save</button>
 		</div>
     </div>
 
@@ -23,73 +23,82 @@
 </div>
 
 <script type="x-tmpl-mustache" id="create-form-template">
-	<div class="form-group">
-		<label class="form-label col-xs-3 required">First name:</label>
-		<div class="col-xs-9">
-			<input type="text" class="form-control required auto-focus" name="first_name" id="first_name" >
-			<p class="error-msg first_name-error"></p>
-		</div>
-	</div>
-
-	<div class="form-group">
-		<label class="form-label col-xs-3 required">Last name:</label>
-		<div class="col-xs-9">
-			<input type="text" class="form-control required" name="last_name" id="last_name" >
-			<p class="error-msg last_name-error"></p>
-		</div>
-	</div>
-	<div class="form-group">
-		<label class="form-label col-xs-3 required">Email:</label>
-		<div class="col-xs-9">
-			<input type="text" class="form-control required" name="email" id="email" >
-			<p class="error-msg email-error"></p>
-		</div>
-	</div>
-	<div class="form-group">
-		<label class="form-label col-xs-3 required">Birthday:</label>
-		<div class="col-xs-9">
-			<div class='input-group date birthday-group' id='birthday-group'>
-                <input type='text' class="form-control" id="birthday" name="birthday" placeholder="YYYY/MM/DD"/>
-                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+	 
+    <div class="row">
+        <div class="col-xs-8">
+            <div class="form-group">
+                <label class="control-label">Title</label>
+                <input class="form-control" name="title" id="title" placeholder="Post title">
+                <p class="error-msg error-title"></p>
             </div>
-            <p class="error-msg birthday-error"></p>
-		</div>
-	</div>
-	<div class="form-group">
-		<label class="form-label col-xs-3 required">Gender:</label>
-		<div class="col-xs-9">
-			<%#genderSelection%>
-				<label class="radio-inline"><input type="radio" name="gender" value="<%id%>"><%text%></label>
-			<%/genderSelection%>
-			<p class="error-msg gender-error"></p>
-		</div>
-	</div>
-	<div class="form-group">
-		<label class="form-label col-xs-3 required">Photo:</label>
-		<input name="image" type="hidden" id="image">
-		<div class="col-xs-9">
-			<div class="row">
-				<div class="col-xs-5">
-					<a href="javascript:void(0)"><div class="image-preview" style="background-image:url('/images/default.jpg')"></div></a>
-				</div>
-				<div class="col-xs-7">
+        </div>
 
-					<div class="type-allow">Allow jpg, png, pdf scan</div>
-					<button class="btn btn-success btn-upload"><i class="fa fa-upload"></i> Upload</button>
-					<input class="hide" id="fileupload" type="file" name="files" data-url="/media/upload">
-				</div>
-			</div>
-			<p class="error error-msg image-error"></p>
-		</div>
-	</div>
-	<div class="form-group">
-		<label class="form-label col-xs-3 required">Status:</label>
-		<div class="col-xs-9">
-			<select class="form-control status" id="status" name="status">
-				<%#statusSelection%>
-					<option value="<%id%>"><%text%></option>
-				<%/statusSelection%>
-			</select>
-		</div>
-	</div>
+        <div class="col-xs-4">
+            <div class="form-group">
+                <label class="control-label">Loop</label>
+                <select class="form-control" name="loop" id="loop">
+                    <option>1 Second</option>
+                    <option>2 Second</option>
+                </select>
+                <p class="error-msg error-loop"></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-8">
+            <div class="form-group">
+                <label class="control-label">Description</label>
+                <textarea style="height:100px" placeholder="Post Description" class="form-control" name="description" id="description"></textarea>
+                <p class="error-msg error-description"></p>
+            </div>
+        </div>
+
+        <div class="col-xs-4">
+            <div class="form-group">
+                <label class="control-label">Fade</label>
+                <select class="form-control" name="fade" id="fade">
+                    <option>1 second</option>
+                    <option>2 second</option>
+                </select>
+                <p class="error-msg error-fade"></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="panel panel-danger video-panel">
+            <!-- Default panel contents -->
+            <div class="panel-heading"><i class="fa fa-cloud-upload"></i> Upload zone</div>
+            <div class="panel-body">
+                <div class="col-xs-8">
+                    <input type="file" class="hidden images-upload" accept="image/*" name="files[]" data-url="/media/upload" multiple>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-main btn-upload-images"><i class="fa fa-picture-o"></i> Upload</button>
+                        <p class="error-msg error-imagesPath"></p>
+                    </div>  
+                    
+                    <div class="upload-image-zone upload-zone form-group col-xs-12">
+                        <div class="row">
+                            <div class='no-data'>No data</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-4">
+                    <input type="file" name="files[]" class="hidden audio-upload" accept="audio/mp3" data-url="/media/upload" multiple>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-main btn-upload-audio"><i class="fa fa-music"></i> Upload</button>
+                        <p class="error-msg error-audioPath"></p>
+                    </div>
+                    <div class="upload-audio-zone upload-zone form-group col-xs-12">
+                        <div class="row">
+                            <div class='no-data'>No data</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>  
 </script>
