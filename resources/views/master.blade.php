@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.11/css/dataTables.bootstrap.min.css"/>
-    
+    <link rel="stylesheet" href="/styles/jquery-ui.css">
     <!--STYLES-->
     <link rel="stylesheet" href="/styles/bootstrap-datetimepicker.min.css">
     <link rel="stylesheet" href="/styles/lightbox.min.css">
@@ -20,6 +20,7 @@
     <script type="text/javascript" src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.11/js/dataTables.bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
 
     <script src="/js/dependencies/moment.min.js"></script>
     <script src="/js/dependencies/bootstrap-datetimepicker.min.js"></script>

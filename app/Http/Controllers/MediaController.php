@@ -91,7 +91,6 @@ class MediaController extends Controller {
             $file = public_path() . '/uploads/audio/' . $fileName;
         }
         
-        
         try {
             if ( unlink($file) ) {
                 return response()->json(['status' => 1, 'message' => 'Delete successfully']);
@@ -103,4 +102,13 @@ class MediaController extends Controller {
             return response()->json(['status' => 0, 'message' => 'Server error']);
         }
     }
+    
+    function extract(Request $request) {
+        $link = $request->input('link');
+        
+        $videoId = $this->media->youtubeIdFromUrl($link);
+        
+    }
+    
+    
 }

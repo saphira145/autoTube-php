@@ -43,6 +43,8 @@ var Video = (function() {
     body.on('click', '.remove', removeImage);
     body.on('click', '.item .remove-audio', removeAudio);
     body.on('click', '#create-video-modal #save-video', saveVideo);
+    body.on('click', '#create-video-modal .dailog-audio', addYoutubeLink);
+    
     
     function uploadImage() {
         $(".images-upload").click();
@@ -217,7 +219,32 @@ var Video = (function() {
         })
     }
     
-})()
+    function addYoutubeLink() {
+        $("#dialog").dialog({
+            autoOpen: false,
+            appendTo: ".upload-audio-zone"
+        });
+        
+        $("#dialog").dialog('open');
+        
+        $("#extract-youtube").ajaxForm({
+            beforeSend: function() {
+                console.log('bef');
+            },
+
+            success: function(res) {
+
+            },
+            complete: function() {
+
+            },
+            error: function() {
+
+            }
+        })
+    }   
+    
+})();
 
 
 $(document).ready(function() {

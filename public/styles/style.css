@@ -280,3 +280,16 @@ fieldset[disabled] .btn-main.active {
 
 /*end project*/
 /*end video*/
+
+/*dialog jquery*/
+.ui-dialog-titlebar {
+    background: #E28181;
+    color: #fff;
+}
+
+.ui-dialog {
+    /*border: 1px solid #E28181!important;*/
+    background: #FFEBCD;
+}
+
+/*emd dialog*/

@@ -23,6 +23,7 @@ Route::post('video/saveVideo', ['as' => 'video.saveVideo', 'uses' => 'VideoContr
 //Media
 Route::post('media/upload', ['as' => 'media.upload', 'uses' => 'MediaController@upload']);
 Route::post('media/remove', ['as' => 'media.remove', 'uses' => 'MediaController@remove']);
+Route::post('media/extract', ['as' => 'media.extract', 'uses' => 'MediaController@extract']);
 
 /*
 |--------------------------------------------------------------------------

@@ -22,6 +22,21 @@
   </div>
 </div>
 
+<div class="hide">
+    <div id="dialog" title="Youtube link">
+        <form class"form" method="post" action="/media/extract" id="extract-youtube">
+            <div class="form-group" >
+                <label>Link</label>
+                <input class="form-control" name="link" class="link" id="link" placeholder="Put link youtube here">
+            </div>  
+            <div class="form-group">
+                <button type="submit" class="btn btn-main">Extract</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
 <script type="x-tmpl-mustache" id="create-form-template">
 	 
     <div class="row">
@@ -90,10 +105,13 @@
                     <input type="file" name="files[]" class="hidden audio-upload" accept="audio/mp3" data-url="/media/upload" multiple>
                     <div class="form-group">
                         <button type="button" class="btn btn-main btn-upload-audio"><i class="fa fa-music"></i> Upload</button>
+                        <span> or </span>
+                        <button type="button" class="btn btn-main dailog-audio"><i class="fa fa-youtube-play"></i> Youtube link</button>
                         <p class="error-msg error-audioPath"></p>
                     </div>
                     <div class="upload-audio-zone upload-zone form-group col-xs-12">
                         <div class="row">
+                            
                             <div class='no-data'>No data</div>
                         </div>
                     </div>
