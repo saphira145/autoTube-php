@@ -180,14 +180,15 @@ var Video = (function() {
             type: 'POST',
             data: form.serialize(),
             beforeSend: function() {
-                createModal.find('.moda-content').addClass('ajax-load');
+                createModal.find('.modal-content').addClass('ajax-load');
             },
             success: function(res) {
                 form.find(".error-msg").text('');
                 form.find(".has-error").removeClass('has-error');
                 
                 if (res.status === 1) {
-                    
+                    createModal.modal('hide');
+                    VideoTable.reload(null, false);
                 }
                 
                 if (res.status === 0) {
@@ -205,7 +206,7 @@ var Video = (function() {
             },
             
             complete: function() {
-                createModal.find('.moda-content').removeClass('ajax-load');
+                createModal.find('.modal-content').removeClass('ajax-load');
             }
         })
     }
