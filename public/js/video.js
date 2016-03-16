@@ -14,14 +14,15 @@ var VideoTable = $('#video-table').DataTable({
     ],
     columnDefs : [
     	{
-    		targets: -1,
-    		orderable: false,
+            targets: -1,
+            orderable: false,
             width: '150px',
-    		render: function(id) {
-    			var template = $("#action-template").html();
-                var html = Mustache.render(template, id);
-				return html;
-    		}
+            render: function(id) {
+                var delimiter = "{{=<% %>=}}";
+                var template = $("#action-template").html();
+                var html = Mustache.render(delimiter + template, {id : id});
+                return html;
+            }
     	},
         {
             targets: -2,
@@ -43,6 +44,7 @@ var Video = (function() {
     body.on('click', '.remove', removeImage);
     body.on('click', '.item .remove-audio', removeAudio);
     body.on('click', '#create-video-modal #save-video', saveVideo);
+    body.on('click', '.wrapper-table .encode-button', encodeVideo);
     
     function uploadImage() {
         $(".images-upload").click();
@@ -207,6 +209,24 @@ var Video = (function() {
             
             complete: function() {
                 createModal.find('.modal-content').removeClass('ajax-load');
+            }
+        })
+    }
+    
+    function encodeVideo() {
+        var id = $(this).attr("id");
+        $.ajax({
+            url: '/video/encode',
+            type: "GET",
+            data: {id: id},
+            beforeSend: function() {
+                
+            },
+            success: function(res) {
+                
+            },
+            complete: function() {
+                
             }
         })
     }

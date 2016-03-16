@@ -35,7 +35,7 @@ class MediaController extends Controller {
 ////            dd($ex);
 //        }
     }
-    
+
     public function upload(Request $request) {
         try {
             $files = $request->file('files');
@@ -90,7 +90,6 @@ class MediaController extends Controller {
         if ($type == 'audio') {
             $file = public_path() . '/uploads/audio/' . $fileName;
         }
-        
         
         try {
             if ( unlink($file) ) {

@@ -41,4 +41,8 @@ class Video extends Model {
             'audioPath' => 'required'
         ];
     }
+    
+    public function findById($id) {
+        return $this->where('id', $id)->first();
+    }
 }
