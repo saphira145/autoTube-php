@@ -56,6 +56,13 @@ class Media extends Model {
         
     }
     
+    public function mergeAudio(array $audioArray) {
+//        ffmpeg -i 1.mp3 -i 2.mp3 -filter_complex "concat=n=2:v=0:a=1[a1]" -map "[a1]" c.mp3
+        
+    }
+
+    
+
     /**
      * get image type allow
      * @return type
