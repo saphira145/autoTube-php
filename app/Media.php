@@ -48,7 +48,14 @@ class Media extends Model {
     public function createVideo($imageUrl, $audioUrl, $output) {
         $command = "ffmpeg -loop 1 -i {$imageUrl} -i {$audioUrl} -c:v libx264 -c:a aac -strict experimental -b:a 192k -shortest {$output} 2>&1";
         
+        // Log process;
+        Log::create(['content' => 'Creating video']);
+        
         if ( exec($command, $response) ) {
+            
+            // Log process;
+            Log::create(['content' => 'Done creating video']);
+            
             return true;
         } else {
             throw new \Exception(implode("\n", $response));
@@ -57,8 +64,9 @@ class Media extends Model {
     }
     
     public function mergeAudio(array $audioArray) {
+        
         $input = '';
-        $output = public_path('uploads/audio/' . uniqid() . '.mp3' );
+        $output = public_path('uploads/audio/_tempt_' . uniqid() . '.mp3' );
         foreach ($audioArray as $audio) {
             $input .= ' ' . $audio;
         }
@@ -74,14 +82,13 @@ class Media extends Model {
         
     }
 
-    public function extractAudio($videoId) {
+    public function extractAudio($videoId, $output) {
         $youtubeLinkBase = 'https://www.youtube.com/watch?v=';
-        $output = public_path("uploads/audio/{$videoId}.mp3");
         
         $command = "youtube-dl --extract-audio -o {$output} --audio-format mp3 {$youtubeLinkBase}{$videoId} 2>&1";
 
         if ( exec($command, $response) ) {
-            echo implode("\n", $response);
+            
             return true;
         } else {
             throw new \Exception(implode("\n", $response));
@@ -139,4 +146,6 @@ class Media extends Model {
         
         return $media;
     }
+    
+   
 }

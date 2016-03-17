@@ -6,6 +6,7 @@ use App\Video;
 use App\Media;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Factory as Validator;
+use Carbon\Carbon;
 
 class VideoController extends Controller
 {
@@ -15,16 +16,19 @@ class VideoController extends Controller
     protected $validator;
     
     protected $media;
+    
+    protected $carbon;
 
-    public function __construct(Video $video, Validator $validator, Media $media) {
+    public function __construct(Video $video, Validator $validator, Media $media, Carbon $carbon) {
         $this->video = $video;
         $this->validator = $validator;
         $this->media = $media;
+        $this->carbon = $carbon;
     }
 
     public function index() {
         
-        return view('video.index', ['test' => 3]);
+        return view('video.index', ['lastTimeOpened' => $this->carbon->now()->toDateTimeString()]);
     }
     
     public function getVideoList(Request $request) {
@@ -101,18 +105,24 @@ class VideoController extends Controller
 
             // Get audio in array
             $audioInArray = explode(',', $video->audio);
-            $audioCollection = $this->media->whereIn('id', $audioInArray)->get();
+            if ( count($audioInArray) != 1 ) {
+                $audioCollection = $this->media->whereIn('id', $audioInArray)->get();
 
-            $inputArray = [];
-            foreach($audioCollection as $audio) {
-                $inputArray[] = '-i ' . public_path( ltrim($audio->file_path) );
+                $inputArray = [];
+                foreach($audioCollection as $audio) {
+                    $inputArray[] = '-i ' . public_path( ltrim($audio->file_path, '/') );
+                }
+                // Get merge audio
+                $mergeAudioPath = $this->media->mergeAudio($inputArray);
+            } else {
+                $audio = $this->media->where('id', $audioInArray[0])->first();
+                $mergeAudioPath = public_path( ltrim($audio->file_path, '/') );
             }
-
-            // Get merge audio
-            $mergeAudioPath = $this->media->mergeAudio($inputArray);
             
             // output video
-            $output = public_path('videos/' . uniqid() . '.mp4');
+            $fileName = uniqid() . '.mp4';
+            $filePath = '/videos/' . $fileName;
+            $output = public_path('videos/' . $fileName);
             
             // Encode video 
             $this->media->createVideo($imageUrl, $mergeAudioPath, $output);
@@ -120,10 +130,13 @@ class VideoController extends Controller
             // Set timeout back to default;
             set_time_limit(300);
             
+            // update store at for video
+            $this->video->where('id', $id)->update(['store_at' => $filePath]);
+            
             return response()->json(['status' => 1, 'message' => 'Encode video successfully']);
             
         } catch (\Exception $ex) {
-//            echo $ex;
+            echo $ex;
             return response()->json(['status' => 0, 'message' => 'Server error']);
         }
     }

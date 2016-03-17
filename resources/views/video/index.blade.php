@@ -2,15 +2,11 @@
     
 @section('content')
 <div class="row">
-    <div class="col-sm-3">
+    <input type="hidden" id="last-time-opened" value="{{$lastTimeOpened}}">
+    <div class="col-sm-3 log-process">
         <h3 class="no-margin" style="margin-bottom: 15px">Processing data</h3>
         <div class="panel-body" style="border-left: 1px solid #E28181;">
-            Creating video... <br>
-            Uploading video... <br>
-            Creating video... <br>
-            Uploading video... <br>
-            Creating video... <br>
-            Uploading video... <br>
+            
         </div>
     </div>
     <div class="col-sm-9">
@@ -77,4 +73,11 @@
             <a href="javascript:void(0)" class="remove-audio" fileName="<%fileName%>"><i class="fa fa-trash"></i></a>
         </div>
     </div>
+</script>
+
+<script type="x-tmp-mustache" id="video-item">
+    <video width="320" height="240" controls>
+        <source src="<%filePath%>" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
 </script>

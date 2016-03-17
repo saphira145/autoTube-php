@@ -107,11 +107,27 @@ class MediaController extends Controller {
         $link = $request->input('link');
         try {
             $videoId = $this->media->youtubeIdFromUrl($link);
+            $fileName = $videoId . "_" . uniqid() .".mp3";
+            
+            $output = public_path("uploads/audio/" . $fileName);
+            
+            $filePath = "/uploads/audio/" . $fileName;
+            
             // Extract audio
-            $this->media->extractAudio($videoId);
+            $this->media->extractAudio($videoId, $output);
+            
+            $fileInfo = [
+                'filePath' => $filePath,
+                'fileName' => $fileName,
+                'mime' => 'video/webm',
+                'type' => 'audio'
+            ];
+            
+            return response()->json(['status' => 1, 'fileInfo' => $fileInfo]);
             
         } catch (Exception $ex) {
             echo $ex;
+            return response()->json(['status' => 0, 'message' => 'Server error']);
         }
         
     }

@@ -27,6 +27,8 @@ Route::post('media/upload', ['as' => 'media.upload', 'uses' => 'MediaController@
 Route::post('media/remove', ['as' => 'media.remove', 'uses' => 'MediaController@remove']);
 Route::post('media/extract', ['as' => 'media.extract', 'uses' => 'MediaController@extract']);
 
+//Log
+Route::post('log/getLogs', ['as' => 'log.getLogs', 'uses' => 'LogController@getLogs']);
 /*
 |--------------------------------------------------------------------------
 | Application Routes

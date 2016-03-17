@@ -13,11 +13,22 @@ var VideoTable = $('#video-table').DataTable({
         {data : 'id'}
     ],
     columnDefs : [
+        {
+            targets: 1,
+            render: function(store_at) {
+                
+                var delimiter = "{{=<% %>=}}";
+                var template = $("#video-item").html();
+                var html = Mustache.render(delimiter + template, {filePath : store_at});
+                return html;
+            }
+        },
     	{
             targets: -1,
             orderable: false,
             width: '150px',
             render: function(id) {
+                
                 var delimiter = "{{=<% %>=}}";
                 var template = $("#action-template").html();
                 var html = Mustache.render(delimiter + template, {id : id});
@@ -102,7 +113,7 @@ var Video = (function() {
                 if (res.status === 1) {
                     var html = $("#audio-item").html();
                     var template = Mustache.render(delimter + html, res.fileInfo);
-                    console.log(template)
+                    
                     var container = $(".upload-audio-zone").find(".row");
                     container.append(template);
                     
@@ -192,7 +203,7 @@ var Video = (function() {
                 
                 if (res.status === 1) {
                     createModal.modal('hide');
-                    VideoTable.reload(null, false);
+                    VideoTable.ajax.reload(null, false);
                 }
                 
                 if (res.status === 0) {
@@ -241,6 +252,8 @@ var Video = (function() {
     }
     
     function addYoutubeLink() {
+        var form = createModal.find('.create-form');
+        
         $("#dialog").dialog({
             autoOpen: false,
             appendTo: ".upload-audio-zone"
@@ -250,25 +263,66 @@ var Video = (function() {
         
         $("#extract-youtube").ajaxForm({
             beforeSend: function() {
-                console.log('bef');
+                createModal.find('.modal-content').addClass('ajax-load');
+                $("#dialog").dialog('close');
             },
 
             success: function(res) {
-
+                if (res.status === 1) {
+                    var html = $("#audio-item").html();
+                    var template = Mustache.render(delimter + html, res.fileInfo);
+                    
+                    var container = $(".upload-audio-zone").find(".row");
+                    container.append(template);
+                    
+                    checkNoData(container, $(".item"));
+                }
+                
+                if (res.status === 0) {
+                    
+                }
             },
             complete: function() {
-
+                createModal.find('.modal-content').removeClass('ajax-load');
             },
             error: function() {
-
+                
             }
         })
     }   
+    
+    function getNotification(lastTimeOpened) {
+        var logProcess = $(".log-process");
+        
+        $.ajax({
+            url: '/log/getLogs',
+            type: 'POST',
+            data: {
+                lastTimeOpened: lastTimeOpened
+            },
+            success: function(res) {
+                if (res.status === 1) {
+                    var logs = res.logs;
+                    for (var index in logs) {
+                        logProcess.find('.panel-body').append('<div>'+ logs[index].content +'</div>');
+                    }
+                    VideoTable.ajax.reload(null, false);
+                    getNotification(res.newLastTimeOpened);
+                }
+            }
+        })
+    }
+    
+    return {
+        getNotification : getNotification
+    }
     
 })();
 
 
 $(document).ready(function() {
+    var lastTimeOpened = $("#last-time-opened");
     
+    Video.getNotification(lastTimeOpened.val());
     
 });
