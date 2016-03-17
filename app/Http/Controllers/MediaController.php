@@ -35,7 +35,7 @@ class MediaController extends Controller {
 //            dd($ex);
         }
     }
-    
+
     public function upload(Request $request) {
         try {
             $files = $request->file('files');

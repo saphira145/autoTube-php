@@ -50,7 +50,7 @@
     
 <script type="x-tmpl-mustache" id="action-template">
     <div>
-        <a href="javascript:void(0)" class="edit-modal-video-button action"  id="<%id%>"><i class="fa fa-video-camera"></i> Encode</a>
+        <a href="javascript:void(0)" class="encode-button action"  id="<%id%>"><i class="fa fa-video-camera"></i> Encode</a>
         <a href="javascript:void(0)" class="delete-modal-video-button action" id="<%id%>"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete</a>
     </div>
 </script>

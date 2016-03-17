@@ -46,7 +46,7 @@ class Media extends Model {
      * @throws \Exception
      */
     public function createVideo($imageUrl, $audioUrl, $output) {
-        $command = "ffmpeg -loop 1 -i {$imageUrl} -i {$audioUrl} -c:v libx264 -c:a aac -strict experimental -b:a 192k -shortest {$output}";
+        $command = "ffmpeg -loop 1 -i {$imageUrl} -i {$audioUrl} -c:v libx264 -c:a aac -strict experimental -b:a 192k -shortest {$output} 2>&1";
         
         if ( exec($command, $response) ) {
             return true;
@@ -57,7 +57,20 @@ class Media extends Model {
     }
     
     public function mergeAudio(array $audioArray) {
-//        ffmpeg -i 1.mp3 -i 2.mp3 -filter_complex "concat=n=2:v=0:a=1[a1]" -map "[a1]" c.mp3
+        $input = '';
+        $output = public_path('uploads/audio/' . uniqid() . '.mp3' );
+        foreach ($audioArray as $audio) {
+            $input .= ' ' . $audio;
+        }
+        
+        $command = 'ffmpeg' . $input . ' -filter_complex "concat=n=2:v=0:a=1[a1]" -map "[a1]" ' . $output . ' 2>&1';
+        
+        if (exec($command, $response) ) {
+            
+            return $output;
+        } else {
+            throw new \Exception(implode("\n", $response));
+        }
         
     }
 
@@ -91,6 +104,7 @@ class Media extends Model {
         return ['mp3'];
     }
     
+
     function youtubeIdFromUrl($url) {
         $pattern = 
             '%^# Match any youtube URL
@@ -114,5 +128,9 @@ class Media extends Model {
             return $matches[1];
         }
         return false;
+    }
+    
+    public function findById($id) {
+        return $this->where('id', $id)->first();
     }
 }
