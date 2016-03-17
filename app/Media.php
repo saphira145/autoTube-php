@@ -131,6 +131,12 @@ class Media extends Model {
     }
     
     public function findById($id) {
-        return $this->where('id', $id)->first();
+        $media = $this->where('id', $id)->first();
+        
+        if (!$media) {
+            throw new \Exception('Not found record');
+        }
+        
+        return $media;
     }
 }

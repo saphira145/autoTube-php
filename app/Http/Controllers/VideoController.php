@@ -122,12 +122,9 @@ class VideoController extends Controller
             
             return response()->json(['status' => 1, 'message' => 'Encode video successfully']);
             
-        } catch (Exception $ex) {
-            echo $ex;
+        } catch (\Exception $ex) {
+//            echo $ex;
             return response()->json(['status' => 0, 'message' => 'Server error']);
         }
-        
-        
-        
     }
 }
