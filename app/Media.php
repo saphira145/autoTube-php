@@ -61,7 +61,19 @@ class Media extends Model {
         
     }
 
-    
+    public function extractAudio($videoId) {
+        $youtubeLinkBase = 'https://www.youtube.com/watch?v=';
+        $output = public_path("uploads/audio/{$videoId}.mp3");
+        
+        $command = "youtube-dl --extract-audio -o {$output} --audio-format mp3 {$youtubeLinkBase}{$videoId} 2>&1";
+
+        if ( exec($command, $response) ) {
+            echo implode("\n", $response);
+            return true;
+        } else {
+            throw new \Exception(implode("\n", $response));
+        }
+    }
 
     /**
      * get image type allow

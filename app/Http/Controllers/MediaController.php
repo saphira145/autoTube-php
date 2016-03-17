@@ -25,15 +25,15 @@ class MediaController extends Controller {
 //        
 //        return $image->response();
         
-//        try {
-//            $this->media->createVideo('C:\xampp\htdocs\autoTube\public\images\img.jpg', 
-//                'C:\xampp\htdocs\autoTube\public\images\lost-star.mp3',
-//                'C:\xampp\htdocs\autoTube\public\images\output.mp4'
-//            );
-//            
-//        } catch (Exception $ex) {
-////            dd($ex);
-//        }
+        try {
+            $this->media->createVideo('C:\xampp\htdocs\autoTube\public\images\img.jpg', 
+                'C:\xampp\htdocs\autoTube\public\images\lost-star.mp3',
+                'C:\xampp\htdocs\autoTube\public\images\output.mp4'
+            );
+            
+        } catch (Exception $ex) {
+//            dd($ex);
+        }
     }
     
     public function upload(Request $request) {
@@ -105,8 +105,14 @@ class MediaController extends Controller {
     
     function extract(Request $request) {
         $link = $request->input('link');
-        
-        $videoId = $this->media->youtubeIdFromUrl($link);
+        try {
+            $videoId = $this->media->youtubeIdFromUrl($link);
+            // Extract audio
+            $this->media->extractAudio($videoId);
+            
+        } catch (Exception $ex) {
+            echo $ex;
+        }
         
     }
     

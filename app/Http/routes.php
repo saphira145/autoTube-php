@@ -21,6 +21,7 @@ Route::post('video/getVideoList', ['as' => 'video.getVideoList', 'uses' => 'Vide
 Route::post('video/saveVideo', ['as' => 'video.saveVideo', 'uses' => 'VideoController@saveVideo']);
 
 //Media
+Route::get('media/index', ['as' => 'media.index', 'uses' => 'MediaController@index']);
 Route::post('media/upload', ['as' => 'media.upload', 'uses' => 'MediaController@upload']);
 Route::post('media/remove', ['as' => 'media.remove', 'uses' => 'MediaController@remove']);
 Route::post('media/extract', ['as' => 'media.extract', 'uses' => 'MediaController@extract']);
