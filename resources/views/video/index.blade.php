@@ -2,19 +2,13 @@
     
 @section('content')
 <div class="row">
-    <input type="hidden" id="last-time-opened" value="{{$lastTimeOpened}}">
-    <div class="col-sm-3 log-process">
-        <h3 class="no-margin" style="margin-bottom: 15px">Processing data</h3>
-        <div class="panel-body" style="border-left: 1px solid #E28181;">
-            
-        </div>
-    </div>
-    <div class="col-sm-9">
+    
+    <div class="col-sm-9" style="border-right: 1px solid #ddd">
         <div class="row wrapper-table">
             <div class="col-xs-12" style="margin-bottom: 15px">
                 <div class="row">
                     <div class="col-xs-12 col-sm-6">
-                        <h3 class="no-margin">Manage Video</h3>
+                        <h3 class="no-margin"><i class="fa fa-tasks" style="font-size: 20px"></i> Manage Video</h3>
                     </div>
                     <div class="col-xs-12 col-sm-6">
                         <button class="btn btn-main pull-right create-video-modal-button" data-toggle="modal" data-target="#create-video-modal">
@@ -25,11 +19,10 @@
             </div>
 
             <div class="col-xs-12">
-                <table id="video-table" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                <table id="video-table" class="table table-striped table-bordered" cellspacing="0" width="100%" style="font-size:13px">
                     <thead>
                         <tr>
                             <th>Title</th>
-                            <th>Video</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -38,16 +31,23 @@
             </div>
         </div>
     </div>
-   
+    <input type="hidden" id="last-time-opened" value="{{$lastTimeOpened}}">
+    <div class="col-sm-3 log-process">
+        <h3 class="no-margin" style="margin-bottom: 15px"><i class="fa fa-hourglass-1" style="font-size: 20px"></i> Processing data</h3>
+        <div class="panel-body">
+            
+        </div>
+    </div>
 </div>
 @endsection
 
 @include('video.createModal')
+@include('video.deleteModal')
     
 <script type="x-tmpl-mustache" id="action-template">
     <div>
         <a href="javascript:void(0)" class="encode-button action"  id="<%id%>"><i class="fa fa-video-camera"></i> Encode</a>
-        <a href="javascript:void(0)" class="delete-modal-video-button action" id="<%id%>"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete</a>
+        <a href="javascript:void(0)" class="delete-modal-video-button action" id="<%id%>" data-toggle="modal" data-target="#delete-video-modal"><span class="glyphicon glyphicon-remove" ></span> Delete</a>
     </div>
 </script>
 
@@ -75,9 +75,11 @@
     </div>
 </script>
 
-<script type="x-tmp-mustache" id="video-item">
-    <video width="320" height="240" controls>
-        <source src="<%filePath%>" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
+<script type="x-tmp-mustache" id="progress-item">
+    <div class="progress" vid="<%video_id%>">
+        <div class="progress-bar progress-bar-striped active" role="progressbar"
+            aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:100%">
+            <div class="<%type%> text"><%content%></div>
+        </div>
+    </div>
 </script>

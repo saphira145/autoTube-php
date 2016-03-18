@@ -6,6 +6,7 @@ use App\Video;
 use App\Media;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Factory as Validator;
+use App\Log;
 use Carbon\Carbon;
 
 class VideoController extends Controller
@@ -18,12 +19,15 @@ class VideoController extends Controller
     protected $media;
     
     protected $carbon;
+    
+    protected $log;
 
-    public function __construct(Video $video, Validator $validator, Media $media, Carbon $carbon) {
+    public function __construct(Video $video, Validator $validator, Media $media, Carbon $carbon, Log $log) {
         $this->video = $video;
         $this->validator = $validator;
         $this->media = $media;
         $this->carbon = $carbon;
+        $this->log = $log;
     }
 
     public function index() {
@@ -119,16 +123,14 @@ class VideoController extends Controller
                 $mergeAudioPath = public_path( ltrim($audio->file_path, '/') );
             }
             
-            // output video
-            $fileName = uniqid() . '.mp4';
-            $filePath = '/videos/' . $fileName;
-            $output = public_path('videos/' . $fileName);
+            // Log process;
+            $this->log->create(['content' => 'Start creating video', 'type' => 'start', 'video_id' => $id]);
             
             // Encode video 
-            $this->media->createVideo($imageUrl, $mergeAudioPath, $output);
+            $filePath = $this->media->encodeVideo($imageUrl, $mergeAudioPath);
             
-            // Set timeout back to default;
-            set_time_limit(300);
+            // Log process;
+            $this->log->create(['content' => 'Done creating video', 'type' => 'done', 'video_id' => $id]);
             
             // update store at for video
             $this->video->where('id', $id)->update(['store_at' => $filePath]);
@@ -139,5 +141,17 @@ class VideoController extends Controller
             echo $ex;
             return response()->json(['status' => 0, 'message' => 'Server error']);
         }
+    }
+    
+    public function remove(Request $request, $id) {
+        
+        try {
+            $this->video->removeById($id);
+            return response()->json(['status' => 1, 'message' => 'Delete successfully']);
+            
+        } catch (Exception $ex) {
+            return response()->json(['status' => 0, 'message' => 'Server error']);
+        }
+        
     }
 }

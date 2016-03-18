@@ -38,25 +38,24 @@ class Media extends Model {
     
     
     /**
-     * Create video from image and audio
+     * Encode video from image and audio
      * @param type $imageUrl
      * @param type $audioUrl
      * @param type $output
      * @return boolean
      * @throws \Exception
      */
-    public function createVideo($imageUrl, $audioUrl, $output) {
+    public function encodeVideo($imageUrl, $audioUrl) {
+        // output video
+        $fileName = uniqid() . '.mp4';
+        $filePath = '/videos/' . $fileName;
+        $output = public_path('videos/' . $fileName);
+        
+        // Command
         $command = "ffmpeg -loop 1 -i {$imageUrl} -i {$audioUrl} -c:v libx264 -c:a aac -strict experimental -b:a 192k -shortest {$output} 2>&1";
         
-        // Log process;
-        Log::create(['content' => 'Creating video']);
-        
-        if ( exec($command, $response) ) {
-            
-            // Log process;
-            Log::create(['content' => 'Done creating video']);
-            
-            return true;
+        if ( exec($command, $response) ) {            
+            return $filePath;
         } else {
             throw new \Exception(implode("\n", $response));
         }

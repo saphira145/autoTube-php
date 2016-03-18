@@ -20,6 +20,7 @@ Route::get('video/index', ['as' => 'video.index', 'uses' => 'VideoController@ind
 Route::post('video/getVideoList', ['as' => 'video.getVideoList', 'uses' => 'VideoController@getVideoList']);
 Route::post('video/saveVideo', ['as' => 'video.saveVideo', 'uses' => 'VideoController@saveVideo']);
 Route::get('video/encode', ['as' => 'video.encode', 'uses' => 'VideoController@encode']);
+Route::get('video/{id}/remove', ['as' => 'video.remove', 'uses' => 'VideoController@remove']);
 
 //Media
 Route::get('media/index', ['as' => 'media.index', 'uses' => 'MediaController@index']);

@@ -6,6 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Log extends Model {
     
-    protected $fillable = ['content'];
+    protected $fillable = ['content', 'type', 'video_id'];
     
 }

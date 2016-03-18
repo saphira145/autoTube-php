@@ -45,4 +45,8 @@ class Video extends Model {
     public function findById($id) {
         return $this->where('id', $id)->first();
     }
+    
+    public function removeById($id) {
+        $this->findById($id)->delete();
+    }
 }

@@ -8,21 +8,11 @@ var VideoTable = $('#video-table').DataTable({
 	},
 	columns : [
         {data : 'title'},
-        {data : 'store_at'},
         {data : 'status'},
         {data : 'id'}
     ],
     columnDefs : [
-        {
-            targets: 1,
-            render: function(store_at) {
-                
-                var delimiter = "{{=<% %>=}}";
-                var template = $("#video-item").html();
-                var html = Mustache.render(delimiter + template, {filePath : store_at});
-                return html;
-            }
-        },
+        
     	{
             targets: -1,
             orderable: false,
@@ -48,6 +38,8 @@ var Video = (function() {
     var body = $('body');
     var delimter = "{{=<% %>=}}";
     var createModal = $("#create-video-modal");
+    var deleteModal = $("#delete-video-modal");
+    var videoLogArray = [];
     
     body.on('click', '.wrapper-table .create-video-modal-button', createVideo);
     body.on('click', '#create-video-modal .btn-upload-images', uploadImage);
@@ -58,6 +50,8 @@ var Video = (function() {
     body.on('click', '#create-video-modal .dailog-audio', addYoutubeLink);
    
     body.on('click', '.wrapper-table .encode-button', encodeVideo);
+    body.on('click', '.wrapper-table .delete-modal-video-button', deleteVideoModal);
+    body.on('click', '#delete-video-modal .delete-video', deleteVideo)
     
     function uploadImage() {
         $(".images-upload").click();
@@ -304,7 +298,16 @@ var Video = (function() {
                 if (res.status === 1) {
                     var logs = res.logs;
                     for (var index in logs) {
-                        logProcess.find('.panel-body').append('<div>'+ logs[index].content +'</div>');
+//                        console.log(videoLogArray.indexOf(logs[index].video_id))
+                        if ( videoLogArray.indexOf(logs[index].video_id) == -1) {
+                            var html = $("#progress-item").html();
+                            var template = Mustache.render(delimter + html, logs[index]);
+                            
+                            logProcess.find('.panel-body').append(template);
+                            videoLogArray.push(logs[index].video_id);
+                        } else {
+                            $(".progress[vid="+ logs[index].video_id +"]").find(".text").text(logs[index].content);
+                        }
                     }
                     VideoTable.ajax.reload(null, false);
                     getNotification(res.newLastTimeOpened);
@@ -312,10 +315,41 @@ var Video = (function() {
             }
         })
     }
+    function deleteVideoModal() {
+        var id = $(this).attr('id');
+
+        deleteModal.attr("vid", id);
+    }
+    
+    function deleteVideo() {
+        var id = deleteModal.attr('vid');
+        $.ajax({
+            url: '/video/'+ id +'/remove',
+            type: 'Get',
+            beforeSend: function() {
+                deleteModal.find('.modal-content').addClass('ajax-load');
+            },
+            success: function(res) {
+                if (res.status === 1) {
+                    VideoTable.ajax.reload(null, false);
+                    deleteModal.modal('hide');
+                }
+                if (res.status === 0) {
+                    deleteModal.modal('hide');
+                }
+             },
+            complete: function() {
+                deleteModal.find('.modal-content').removeClass('ajax-load');
+            },
+            error: function() {
+                alert('Server Error');
+            }
+        })
+    }
     
     return {
         getNotification : getNotification
-    }
+    };
     
 })();
 
