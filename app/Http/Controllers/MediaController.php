@@ -18,21 +18,16 @@ class MediaController extends Controller {
     }
     public function index(Request $request) {
         
-//        $path = public_path('images/test1.jpg');
-//        $input = $this->imageManager->make($path);
-//        
-//        $image = $this->media->createThumbnail($input, 'DRUM');
-//        
-//        return $image->response();
-        
         try {
-            $this->media->createVideo('C:\xampp\htdocs\autoTube\public\images\img.jpg', 
-                'C:\xampp\htdocs\autoTube\public\images\lost-star.mp3',
-                'C:\xampp\htdocs\autoTube\public\images\output.mp4'
-            );
+            $path = public_path('images/img002.jpg');
+            $input = $this->imageManager->make($path);
+
+            $image = $this->media->createThumbnail($input, 'DRUM TEST MORE');
+
+            return $image->response();
             
         } catch (Exception $ex) {
-//            dd($ex);
+            
         }
     }
 
@@ -58,7 +53,7 @@ class MediaController extends Controller {
                     ];
                 }
                 
-                if ( in_array($ext, $this->media->audioType()) ) {
+                else if ( in_array($ext, $this->media->audioType()) ) {
                     $file->move('uploads/audio', $fileName);
                     $fileInfo = [
                         'filePath' => "/uploads/audio/{$fileName}",
@@ -67,7 +62,10 @@ class MediaController extends Controller {
                         'type' => 'audio'
                     ];
                 }
-
+                
+                else {
+                    return response()->json(['status' => 0, 'message' => 'File upload is not valid']);
+                }
             }
 
             return response()->json(['status' => 1, 'message' => 'Upload successfully', 'fileInfo' => $fileInfo]);

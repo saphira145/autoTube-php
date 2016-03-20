@@ -24,7 +24,7 @@ var VideoTable = $('#video-table').DataTable({
     	{
             targets: -1,
             orderable: false,
-            width: '225px',
+            width: '150px',
             render: function(id) {
                 
                 var delimiter = "{{=<% %>=}}";
@@ -47,9 +47,6 @@ var Video = (function() {
     var delimter = "{{=<% %>=}}";
     var createModal = $("#create-video-modal");
     var deleteModal = $("#delete-video-modal");
-    var encodeModal = $("#encode-video-modal");
-    var uploadModal = $("#upload-video-modal");
-    
     var videoLogArray = [];
     
     body.on('click', '.wrapper-table .create-video-modal-button', createVideo);
@@ -60,12 +57,9 @@ var Video = (function() {
     body.on('click', '#create-video-modal #save-video', saveVideo);
     body.on('click', '#create-video-modal .dailog-audio', addYoutubeLink);
    
+    body.on('click', '.wrapper-table .encode-button', encodeVideo);
     body.on('click', '.wrapper-table .delete-modal-video-button', deleteVideoModal);
     body.on('click', '#delete-video-modal .delete-video', deleteVideo)
-    
-    body.on('click', '.wrapper-table .encode-modal-video-button', encodeVideoModal);
-    body.on('click', '#encode-video-modal .encode-video', encodeVideo);
-    
     
     function uploadImage() {
         $(".images-upload").click();
@@ -234,32 +228,20 @@ var Video = (function() {
         })
     }
     
-    function encodeVideoModal() {
-        var id = $(this).attr('id');
-        
-        encodeModal.attr("vid", id);
-    }
-    
     function encodeVideo() {
-        var id = encodeModal.attr("vid");
-        var actionGroup = $(".action[id="+ id +"]").closest('.action-group');
-        
+        var id = $(this).attr("id");
         $.ajax({
             url: '/video/encode',
             type: "GET",
             data: {id: id},
             beforeSend: function() {
-                actionGroup.addClass('ajax-dot-load');
-                actionGroup.find('.action').css('visibility', 'hidden');
-                encodeModal.modal('hide');
+                
             },
             success: function(res) {
-                VideoTable.ajax.reload(null, false);
                 
             },
             complete: function() {
-                actionGroup.removeClass('ajax-dot-load');
-                actionGroup.find('.action').css('visibility', 'visible');
+                
             }
         })
     }
@@ -272,6 +254,7 @@ var Video = (function() {
     }
     
     function addYoutubeLink() {
+        var form = createModal.find('.create-form');
         
         $("#dialog").dialog({
             autoOpen: false,
@@ -331,11 +314,10 @@ var Video = (function() {
                             logProcess.find('.panel-body').append(template);
                             videoLogArray.push(logs[index].video_id);
                         } else {
-                            $(".progress[vid="+ logs[index].video_id +"]")
-                                    .find('.progress-bar').addClass('done');
                             $(".progress[vid="+ logs[index].video_id +"]").find(".text").text(logs[index].content);
                         }
                     }
+                    VideoTable.ajax.reload(null, false);
                     getNotification(res.newLastTimeOpened);
                 }
             }
@@ -381,7 +363,6 @@ var Video = (function() {
 
 
 $(document).ready(function() {
-    
     var lastTimeOpened = $("#last-time-opened");
     
     Video.getNotification(lastTimeOpened.val());

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Factory as Validator;
 use App\Log;
 use Carbon\Carbon;
+use Illuminate\Session\Store as Session;
 
 class VideoController extends Controller
 {
@@ -21,13 +22,16 @@ class VideoController extends Controller
     protected $carbon;
     
     protected $log;
+    
+    protected $session;
 
-    public function __construct(Video $video, Validator $validator, Media $media, Carbon $carbon, Log $log) {
+    public function __construct(Video $video, Validator $validator, Media $media, Carbon $carbon, Log $log, Session $session) {
         $this->video = $video;
         $this->validator = $validator;
         $this->media = $media;
         $this->carbon = $carbon;
         $this->log = $log;
+        $this->session = $session;
     }
 
     public function index() {
@@ -46,7 +50,7 @@ class VideoController extends Controller
         
         return response()->json([
             'data' => $videoList['records'], 
-            'totalRecords' => $videoList['totalRecords'],
+            'recordsTotal' => $videoList['totalRecords'],
             'recordsFiltered' => $videoList['totalRecords']
         ]);
     }
@@ -81,7 +85,8 @@ class VideoController extends Controller
                 'fade' => $params['fade'],
                 'description' => $params['description'],
                 'images' => implode(',', $imageIds),
-                'audio' => implode(',', $audioIds)
+                'audio' => implode(',', $audioIds),
+                'thumbnail_text' => $params['thumbnail_text']
             ]);
             
             return response()->json(['status' => 1, 'message' => 'Save video successfully']);
@@ -103,7 +108,7 @@ class VideoController extends Controller
             // Get all image image in array
             $imagesInArray = explode(',', $video->images);
             $image = $this->media->findById($imagesInArray[0]);
-
+            
             // Get image url
             $imageUrl = public_path(ltrim($image->file_path, '/'));
 
@@ -133,7 +138,7 @@ class VideoController extends Controller
             $this->log->create(['content' => 'Done creating video', 'type' => 'done', 'video_id' => $id]);
             
             // update store at for video
-            $this->video->where('id', $id)->update(['store_at' => $filePath]);
+            $this->video->where('id', $id)->update(['store_at' => $filePath, 'status' => 1]);
             
             return response()->json(['status' => 1, 'message' => 'Encode video successfully']);
             

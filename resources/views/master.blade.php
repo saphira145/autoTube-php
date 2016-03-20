@@ -5,10 +5,11 @@
 
     <!-- Viewport mobile tag for sensible mobile support -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.11/css/dataTables.bootstrap.min.css"/>
+    <link rel="stylesheet" href="/styles/bootstrap.min.css">
+    <link rel="stylesheet" href="/styles/font-awesome.min.css">
+    <link rel="stylesheet" href="/styles/dataTables.bootstrap.min.css"/>
     <link rel="stylesheet" href="/styles/jquery-ui.css">
     <!--STYLES-->
     <link rel="stylesheet" href="/styles/bootstrap-datetimepicker.min.css">
@@ -16,11 +17,11 @@
     <link rel="stylesheet" href="/styles/style.css">
     <!--STYLES END-->
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.11/js/dataTables.bootstrap.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+    <script src="/js/dependencies/jquery.min.js"></script>
+    <script src="/js/dependencies/jquery.dataTables.min.js"></script>
+    <script src="/js/dependencies/bootstrap.min.js"></script>
+    <script src="/js/dependencies/dataTables.bootstrap.min.js"></script>
+    <script src="/js/dependencies/jquery-ui.min.js"></script>
 
     <script src="/js/dependencies/moment.min.js"></script>
     <script src="/js/dependencies/bootstrap-datetimepicker.min.js"></script>
@@ -53,19 +54,23 @@
                     <li><a href="#">Contact</a></li>
                 </ul>    
                 <ul class="nav navbar-nav navbar-right">
-                    <li class="dropdown"> <a href="#" class="dropdown-toggle" data-toggle="dropdown"> 
-                            <span class="hidden-xs-only">Tran Binh </span> 
-                            <span class="thumb-small avatar inline">
-                                <!--<img src="/images/avatar.jpg" alt="Mika Sokeil" class="img-circle">-->
-                            </span> <b class="caret hidden-xs-only"></b> </a> 
-                        <ul class="dropdown-menu pull-right"> 
-                            <li><a href="#">Settings</a></li> 
-                            <li><a href="#">Profile</a></li> 
-                            <li><a href="#"><span class="badge bg-danger pull-right">3</span>Notifications</a></li> 
-                            <li class="divider"></li> 
-                            <li><a href="docs.html">Help</a></li> <li><a href="signin.html">Logout</a></li> 
-                        </ul> 
-                    </li>
+                    @if (Session::has('user'))
+                        <li class="dropdown"> <a href="#" class="dropdown-toggle" data-toggle="dropdown"> 
+                                <span class="hidden-xs-only">{{Session::get('user')->email}}</span> 
+                                <span class="thumb-small avatar inline">
+                                    <!--<img src="/images/avatar.jpg" alt="Mika Sokeil" class="img-circle">-->
+                                </span> <b class="caret hidden-xs-only"></b> </a> 
+                            <ul class="dropdown-menu pull-right"> 
+                                <li><a href="#">Settings</a></li> 
+                                <li><a href="#">Profile</a></li> 
+                                <li><a href="#"><span class="badge bg-danger pull-right">3</span>Notifications</a></li> 
+                                <li class="divider"></li> 
+                                <li><a href="docs.html">Help</a></li> <li><a href="/auth/logout">Logout</a></li> 
+                            </ul> 
+                        </li>
+                    @else 
+                    <li><a href="/auth"><i class="fa fa-sign-in"></i> Login</a></li> 
+                    @endif
                 </ul>
             </div><!--/.nav-collapse -->
         </div><!--/.container-fluid -->

@@ -15,21 +15,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('youtube/index', 'YoutubeController@index');
-Route::get('video/index', ['as' => 'video.index', 'uses' => 'VideoController@index']);
-Route::post('video/getVideoList', ['as' => 'video.getVideoList', 'uses' => 'VideoController@getVideoList']);
-Route::post('video/saveVideo', ['as' => 'video.saveVideo', 'uses' => 'VideoController@saveVideo']);
-Route::get('video/encode', ['as' => 'video.encode', 'uses' => 'VideoController@encode']);
-Route::get('video/{id}/remove', ['as' => 'video.remove', 'uses' => 'VideoController@remove']);
 
-//Media
-Route::get('media/index', ['as' => 'media.index', 'uses' => 'MediaController@index']);
-Route::post('media/upload', ['as' => 'media.upload', 'uses' => 'MediaController@upload']);
-Route::post('media/remove', ['as' => 'media.remove', 'uses' => 'MediaController@remove']);
-Route::post('media/extract', ['as' => 'media.extract', 'uses' => 'MediaController@extract']);
-
-//Log
-Route::post('log/getLogs', ['as' => 'log.getLogs', 'uses' => 'LogController@getLogs']);
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -42,5 +28,23 @@ Route::post('log/getLogs', ['as' => 'log.getLogs', 'uses' => 'LogController@getL
 */
 
 Route::group(['middleware' => ['web']], function () {
-    //
+    Route::get('youtube/index', 'YoutubeController@index');
+    Route::get('video/index', ['as' => 'video.index', 'uses' => 'VideoController@index']);
+    Route::post('video/getVideoList', ['as' => 'video.getVideoList', 'uses' => 'VideoController@getVideoList']);
+    Route::post('video/saveVideo', ['as' => 'video.saveVideo', 'uses' => 'VideoController@saveVideo']);
+    Route::get('video/encode', ['as' => 'video.encode', 'uses' => 'VideoController@encode']);
+    Route::get('video/{id}/remove', ['as' => 'video.remove', 'uses' => 'VideoController@remove']);
+
+    //Media
+    Route::get('media/index', ['as' => 'media.index', 'uses' => 'MediaController@index']);
+    Route::post('media/upload', ['as' => 'media.upload', 'uses' => 'MediaController@upload']);
+    Route::post('media/remove', ['as' => 'media.remove', 'uses' => 'MediaController@remove']);
+    Route::post('media/extract', ['as' => 'media.extract', 'uses' => 'MediaController@extract']);
+
+    //Log
+    Route::post('log/getLogs', ['as' => 'log.getLogs', 'uses' => 'LogController@getLogs']);
+
+    Route::get('auth', ['as' => 'auth.index', 'uses' => 'AuthController@index']);
+    Route::get('auth/callback', ['as' => 'auth.callback', 'uses' => 'AuthController@callback']);
+    Route::get('auth/logout', ['as' => 'auth.logout', 'uses' => 'AuthController@logout']);
 });

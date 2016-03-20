@@ -22,10 +22,19 @@ body {
     content: '';
     background: url('/images/ajax-load.gif') no-repeat center;
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(255,255,255,0.5);
+    z-index: 9999;
+}
+.ajax-dot-load {
+    position: relative;
+}
+
+.ajax-dot-load::after {
+    content: '';
+    background: url('/images/loading-dot.gif') no-repeat center;
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
     background-color: rgba(255,255,255,0.5);
     z-index: 9999;
 }
@@ -171,8 +180,8 @@ fieldset[disabled] .btn-main.active {
 .pagination>.active>span, 
 .pagination>.active>span:focus, 
 .pagination>.active>span:hover {
-    background-color: #E28181;
-    border-color: #E28181;
+    background-color: #9B59B6;
+    border-color: #9B59B6;
 }
 
 /*modal*/
@@ -186,11 +195,11 @@ fieldset[disabled] .btn-main.active {
 
 
 .action {
-    color: #E28181;
+    color: #9B59B6;
 }
 
 #video-table thead tr {
-    background: #E28181;
+    background: #9B59B6;
     color: #fff;
 }
 #video-table th, #video-table td {
@@ -274,16 +283,18 @@ fieldset[disabled] .btn-main.active {
     overflow-y: auto;
 }
 .video-panel .panel-heading {
-    background: #E28181;
+    background: #9B59B6;
     color: #fff;
 }
-
+.progress .done {
+    background-color: #5cb85c!important;
+}
 /*end project*/
 /*end video*/
 
 /*dialog jquery*/
 .ui-dialog-titlebar {
-    background: #E28181;
+    background: #9B59B6;
     color: #fff;
 }
 
@@ -293,3 +304,22 @@ fieldset[disabled] .btn-main.active {
 }
 
 /*emd dialog*/
+
+#video-table .status {
+    padding: 2px 5px;
+    color: #fff;
+    width: 90%;
+    text-align: center;
+}
+.raw-status {
+    background: #f0ad4e;
+}
+.encoded-status {
+    background: #337ab7;
+}
+.uploaded-status {
+    background: #5cb85c;
+}
+#video-table td {
+    font-size: 14px;
+}

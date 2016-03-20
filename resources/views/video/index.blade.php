@@ -12,14 +12,14 @@
                     </div>
                     <div class="col-xs-12 col-sm-6">
                         <button class="btn btn-main pull-right create-video-modal-button" data-toggle="modal" data-target="#create-video-modal">
-                            Create Video
+                            <i class="fa fa-plus"></i> Create Video
                         </button>
                     </div>
                 </div>
             </div>
 
             <div class="col-xs-12">
-                <table id="video-table" class="table table-striped table-bordered" cellspacing="0" width="100%" style="font-size:13px">
+                <table id="video-table" class="table table-striped table-bordered" cellspacing="0" width="100%">
                     <thead>
                         <tr>
                             <th>Title</th>
@@ -43,11 +43,13 @@
 
 @include('video.createModal')
 @include('video.deleteModal')
+@include('video.encodeModal')
     
 <script type="x-tmpl-mustache" id="action-template">
-    <div>
-        <a href="javascript:void(0)" class="encode-button action"  id="<%id%>"><i class="fa fa-video-camera"></i> Encode</a>
-        <a href="javascript:void(0)" class="delete-modal-video-button action" id="<%id%>" data-toggle="modal" data-target="#delete-video-modal"><span class="glyphicon glyphicon-remove" ></span> Delete</a>
+    <div class="action-group">
+        <a href="javascript:void(0)" class="encode-modal-video-button action"  id="<%id%>"data-toggle="modal" data-target="#encode-video-modal"><i class="fa fa-video-camera"></i> Encode</a>
+        <a href="javascript:void(0)" class="upload-modal-video-button action"  id="<%id%>"><i class="fa fa-upload"></i> Upload</a>
+        <a href="javascript:void(0)" class="delete-modal-video-button action" id="<%id%>" data-toggle="modal" data-target="#delete-video-modal"><i class="fa fa-trash"></i> Delete</a>
     </div>
 </script>
 
@@ -81,5 +83,11 @@
             aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:100%">
             <div class="<%type%> text"><%content%></div>
         </div>
+    </div>
+</script>
+
+<script type="x-tmp-mustache" id="status-template">
+    <div class="<%class%>-status status">
+        <span class=""><%name%></span>
     </div>
 </script>
