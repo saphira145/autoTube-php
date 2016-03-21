@@ -18,7 +18,8 @@
     <!--STYLES END-->
 
     <script src="/js/dependencies/jquery.min.js"></script>
-    <script src="/js/dependencies/jquery.dataTables.min.js"></script>
+    <!--<script src="/js/dependencies/jquery.dataTables.min.js"></script>-->
+    <script type="text/javascript" src="https://cdn.datatables.net/t/dt/dt-1.10.11/datatables.min.js"></script>
     <script src="/js/dependencies/bootstrap.min.js"></script>
     <script src="/js/dependencies/dataTables.bootstrap.min.js"></script>
     <script src="/js/dependencies/jquery-ui.min.js"></script>

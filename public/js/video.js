@@ -66,6 +66,9 @@ var Video = (function() {
     body.on('click', '.wrapper-table .encode-modal-video-button', encodeVideoModal);
     body.on('click', '#encode-video-modal .encode-video', encodeVideo);
     
+    body.on('click', '.wrapper-table .upload-modal-video-button', uploadVideo);
+    
+    
     
     function uploadImage() {
         $(".images-upload").click();
@@ -369,6 +372,29 @@ var Video = (function() {
             },
             error: function() {
                 alert('Server Error');
+            }
+        })
+    }
+    
+    function uploadVideo() {
+        var id = $(this).attr('id');
+        $.ajax({
+            url: '/video/upload',
+            type: 'GET',
+            data: {
+                id: id
+            },
+            beforeSend: function() {
+                
+            },
+            success: function(res) {
+                
+            },
+            complete: function() {
+                
+            },
+            error: function() {
+                
             }
         })
     }

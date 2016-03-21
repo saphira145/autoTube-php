@@ -159,4 +159,29 @@ class VideoController extends Controller
         }
         
     }
+    
+    public function upload(Request $request) {
+        $videoId = $request->input('id');
+        $client = $this->session->get('client');
+        
+        $video = $this->video->findById($videoId);
+        $youtubeService = new \Google_Service_YouTube($client);
+        
+        if ( $client->getAccessToken() ) {
+            $snippet = new \Google_Service_YouTube_VideoSnippet();
+            $snippet->setTitle($video->title);
+            $snippet->setDescription($video->description);
+//            $snippet->setTags($tags)
+            $snippet->setCategoryId(22);
+            
+            $status = new \Google_Service_YouTube_VideoStatus();
+            $status->privacyStatus = 'private';
+            
+            $video = new \Google_Service_YouTube_Video();
+            $video->setSnippet($snippet);
+            $video->setStatus($status);
+            
+        }
+        
+    }
 }

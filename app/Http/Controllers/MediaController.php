@@ -39,6 +39,7 @@ class MediaController extends Controller {
                 
                 $ext = $file->getClientOriginalExtension();
                 $mimeType = $file->getMimeType();
+                
                 $uniqueId = uniqid();
                 $fileName = $uniqueId . '.' .  $ext;
                 

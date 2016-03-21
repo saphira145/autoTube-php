@@ -58,6 +58,7 @@ class AuthController extends Controller {
             $this->client->authenticate($params['code']);
             $this->session->put('access_token', $this->client->getAccessToken());
             $this->session->put('user', $this->oauth2->userinfo->get());
+            $this->session->put('client', $this->client);
             return redirect($this->redirectUri);
         }
     }
