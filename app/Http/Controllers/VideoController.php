@@ -9,6 +9,7 @@ use Illuminate\Validation\Factory as Validator;
 use App\Log;
 use Carbon\Carbon;
 use Illuminate\Session\Store as Session;
+use Google_Client as GoogleClient;
 
 class VideoController extends Controller
 {
@@ -24,14 +25,20 @@ class VideoController extends Controller
     protected $log;
     
     protected $session;
+    
+    protected $client;
 
-    public function __construct(Video $video, Validator $validator, Media $media, Carbon $carbon, Log $log, Session $session) {
+    public function __construct(Video $video, Validator $validator, Media $media,
+        Carbon $carbon, Log $log, Session $session, GoogleClient $client) 
+    {
         $this->video = $video;
         $this->validator = $validator;
         $this->media = $media;
         $this->carbon = $carbon;
         $this->log = $log;
         $this->session = $session;
+        $this->client = $client;
+        $this->client->setAuthConfigFile(public_path('client_secret.json'));
     }
 
     public function index() {
@@ -162,26 +169,71 @@ class VideoController extends Controller
     
     public function upload(Request $request) {
         $videoId = $request->input('id');
-        $client = $this->session->get('client');
         
         $video = $this->video->findById($videoId);
+        $videoPath = $video->store_at;
+        $videoRealPath = public_path(ltrim($videoPath, '/'));
+        $client = $this->session->get('client');
+        
         $youtubeService = new \Google_Service_YouTube($client);
         
         if ( $client->getAccessToken() ) {
-            $snippet = new \Google_Service_YouTube_VideoSnippet();
-            $snippet->setTitle($video->title);
-            $snippet->setDescription($video->description);
-//            $snippet->setTags($tags)
-            $snippet->setCategoryId(22);
             
-            $status = new \Google_Service_YouTube_VideoStatus();
-            $status->privacyStatus = 'private';
-            
-            $video = new \Google_Service_YouTube_Video();
-            $video->setSnippet($snippet);
-            $video->setStatus($status);
+            try {
+                $snippet = new \Google_Service_YouTube_VideoSnippet();
+                $snippet->setTitle($video->title);
+                $snippet->setDescription($video->description);
+    //            $snippet->setTags($tags)
+                $snippet->setCategoryId(22);
+
+                $status = new \Google_Service_YouTube_VideoStatus();
+                $status->privacyStatus = 'private';
+
+                $video = new \Google_Service_YouTube_Video();
+                $video->setSnippet($snippet);
+                $video->setStatus($status);
+                $chunkSizeBytes = 1 * 1024 * 1024;
+
+                // Setting the defer flag to true tells the client to return a request which can be called
+                // with ->execute(); instead of making the API call immediately.
+                $client->setDefer(true);
+
+                // Create a request for the API's videos.insert method to create and upload the video.
+                $insertRequest = $youtubeService->videos->insert("status,snippet", $video);
+
+                // Create a MediaFileUpload object for resumable uploads.
+                $media = new \Google_Http_MediaFileUpload(
+                    $client,
+                    $insertRequest,
+                    'video/*',
+                    null,
+                    true,
+                    $chunkSizeBytes
+                );
+                $media->setFileSize(filesize($videoRealPath));
+
+                // Read the media file and upload it.
+                $status = false;
+                $handle = fopen($videoRealPath, "rb");
+                while (!$status && !feof($handle)) {
+                  $chunk = fread($handle, $chunkSizeBytes);
+                  $status = $media->nextChunk($chunk);
+                }
+                fclose($handle);
+
+                // If you want to make other calls after the file upload, set setDefer back to false
+                $client->setDefer(false);
+                
+                return response()->json(['status' => 1, 'message' => 'Upload successfully']);
+                
+            } catch (Exception $ex) {
+                echo $ex;
+                return response()->json(['status' => 0, 'message' => 'Cannot upload']);
+            }
             
         }
+        
+        return response()->json(['status' => 0, 'redirect_url' => '/auth']);
         
     }
 }

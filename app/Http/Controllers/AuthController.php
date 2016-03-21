@@ -29,11 +29,12 @@ class AuthController extends Controller {
         $this->session = $session;
         $this->json = public_path('client_secret.json');
         $this->client->setAuthConfigFile($this->json);
-        $client->addScope("email", "profile");
+        $this->client->addScope("email", "profile");
+        $this->client->addScope("https://www.googleapis.com/auth/youtube.upload");
     }
      
     public function index() {
-
+//        $this->session->flush();
         if ($this->session->has('access_token')) {
             $this->client->setAccessToken($this->session->get('access_token'));
             
