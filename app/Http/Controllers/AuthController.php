@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use Google_Client as GoogleClient;
-use Google_Service_Drive;
 use Illuminate\Session\Store as Session;
 use Google_Service_Oauth2 as Oauth2;
 
@@ -30,7 +29,7 @@ class AuthController extends Controller {
         $this->json = public_path('client_secret.json');
         $this->client->setAuthConfigFile($this->json);
         $this->client->addScope("email", "profile");
-        $this->client->addScope("https://www.googleapis.com/auth/youtube.upload");
+        $this->client->addScope("https://www.googleapis.com/auth/youtube");
     }
      
     public function index() {

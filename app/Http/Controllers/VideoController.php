@@ -10,6 +10,7 @@ use App\Log;
 use Carbon\Carbon;
 use Illuminate\Session\Store as Session;
 use Google_Client as GoogleClient;
+use Intervention\Image\ImageManager;
 
 class VideoController extends Controller
 {
@@ -27,9 +28,11 @@ class VideoController extends Controller
     protected $session;
     
     protected $client;
+    
+    protected $imageManager;
 
     public function __construct(Video $video, Validator $validator, Media $media,
-        Carbon $carbon, Log $log, Session $session, GoogleClient $client) 
+        Carbon $carbon, Log $log, Session $session, GoogleClient $client, ImageManager $imageManager) 
     {
         $this->video = $video;
         $this->validator = $validator;
@@ -38,6 +41,7 @@ class VideoController extends Controller
         $this->log = $log;
         $this->session = $session;
         $this->client = $client;
+        $this->imageManager = $imageManager;
         $this->client->setAuthConfigFile(public_path('client_secret.json'));
     }
 
@@ -86,6 +90,16 @@ class VideoController extends Controller
                 $audioIds[] = $media->id;
             }
             
+            $imagesPath = $request->imagesPath;
+            $realPathInput = public_path(ltrim($imagesPath[0], '/'));
+            $name = uniqid() . '.jpg';
+            $realPathOutput = public_path('uploads/thumbnails/' . $name);
+            $pathOutput = '/uploads/thumbnails/' . $name;
+            $input = $this->imageManager->make($realPathInput);
+
+            $image = $this->media->createThumbnail($input, $params['thumbnail_text']);
+            $image->save($realPathOutput);
+            
             $this->video->create([
                 'title' => $params['title'],
                 'loop' => $params['loop'],
@@ -93,7 +107,8 @@ class VideoController extends Controller
                 'description' => $params['description'],
                 'images' => implode(',', $imageIds),
                 'audio' => implode(',', $audioIds),
-                'thumbnail_text' => $params['thumbnail_text']
+                'thumbnail_text' => $params['thumbnail_text'],
+                'thumbnail' => $pathOutput
             ]);
             
             return response()->json(['status' => 1, 'message' => 'Save video successfully']);
@@ -174,7 +189,7 @@ class VideoController extends Controller
         $videoPath = $video->store_at;
         $videoRealPath = public_path(ltrim($videoPath, '/'));
         $client = $this->session->get('client');
-        
+        $thumbnailRealPath = public_path(ltrim($video->thumbnail, '/'));
         $youtubeService = new \Google_Service_YouTube($client);
         
         if ( $client->getAccessToken() ) {
@@ -189,27 +204,23 @@ class VideoController extends Controller
                 $status = new \Google_Service_YouTube_VideoStatus();
                 $status->privacyStatus = 'private';
 
-                $video = new \Google_Service_YouTube_Video();
-                $video->setSnippet($snippet);
-                $video->setStatus($status);
+                $videoYoutube = new \Google_Service_YouTube_Video();
+                $videoYoutube->setSnippet($snippet);
+                $videoYoutube->setStatus($status);
                 $chunkSizeBytes = 1 * 1024 * 1024;
 
                 // Setting the defer flag to true tells the client to return a request which can be called
                 // with ->execute(); instead of making the API call immediately.
                 $client->setDefer(true);
 
+                // Log
+                $this->log->create(['content' => 'start uploading video', 'type' => 'start', 'video_id' => $video->id]);    
+                
                 // Create a request for the API's videos.insert method to create and upload the video.
-                $insertRequest = $youtubeService->videos->insert("status,snippet", $video);
+                $insertRequest = $youtubeService->videos->insert("status,snippet", $videoYoutube);
 
                 // Create a MediaFileUpload object for resumable uploads.
-                $media = new \Google_Http_MediaFileUpload(
-                    $client,
-                    $insertRequest,
-                    'video/*',
-                    null,
-                    true,
-                    $chunkSizeBytes
-                );
+                $media = new \Google_Http_MediaFileUpload($client, $insertRequest, 'video/*', null, true, $chunkSizeBytes);
                 $media->setFileSize(filesize($videoRealPath));
 
                 // Read the media file and upload it.
@@ -222,7 +233,34 @@ class VideoController extends Controller
                 fclose($handle);
 
                 // If you want to make other calls after the file upload, set setDefer back to false
+//                $client->setDefer(false);
+                // Create a MediaFileUpload with resumable uploads
+                
+                $setRequest = $youtubeService->thumbnails->set($status['id']);
+
+                // Create a MediaFileUpload object for resumable uploads.
+                $media = new \Google_Http_MediaFileUpload($client, $setRequest, 'image/jpeg', null, true, $chunkSizeBytes);
+                $media->setFileSize(filesize($thumbnailRealPath));
+
+                // Read the media file and upload it chunk by chunk.
+                $status = false;
+                $handle = fopen($thumbnailRealPath, "rb");
+                while (!$status && !feof($handle)) {
+                  $chunk = fread($handle, $chunkSizeBytes);
+                  $status = $media->nextChunk($chunk);
+                }
+
+                fclose($handle);
+
+                // If you want to make other calls after the file upload, set setDefer back to false
                 $client->setDefer(false);
+
+                
+                // Log
+                $this->log->create(['content' => 'Upload video successully', 'type' => 'done', 'video_id' => $video->id]);
+                
+                // update store at for video    
+                $this->video->where('id', $video->id)->update(['status' => 2]);
                 
                 return response()->json(['status' => 1, 'message' => 'Upload successfully']);
                 

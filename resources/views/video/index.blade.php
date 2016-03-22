@@ -44,11 +44,12 @@
 @include('video.createModal')
 @include('video.deleteModal')
 @include('video.encodeModal')
+@include('video.uploadModal')
     
 <script type="x-tmpl-mustache" id="action-template">
     <div class="action-group">
-        <a href="javascript:void(0)" class="encode-modal-video-button action"  id="<%id%>"data-toggle="modal" data-target="#encode-video-modal"><i class="fa fa-video-camera"></i> Encode</a>
-        <a href="javascript:void(0)" class="upload-modal-video-button action"  id="<%id%>"><i class="fa fa-upload"></i> Upload</a>
+        <a href="javascript:void(0)" class="encode-modal-video-button action"  id="<%id%>" data-toggle="modal" data-target="#encode-video-modal"><i class="fa fa-video-camera"></i> Encode</a>
+        <a href="javascript:void(0)" class="upload-modal-video-button action"  id="<%id%>" data-toggle="modal" data-target="#upload-video-modal"><i class="fa fa-upload"></i> Upload</a>
         <a href="javascript:void(0)" class="delete-modal-video-button action" id="<%id%>" data-toggle="modal" data-target="#delete-video-modal"><i class="fa fa-trash"></i> Delete</a>
     </div>
 </script>
