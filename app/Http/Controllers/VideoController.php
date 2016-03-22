@@ -202,7 +202,7 @@ class VideoController extends Controller
                 $snippet->setCategoryId(22);
 
                 $status = new \Google_Service_YouTube_VideoStatus();
-                $status->privacyStatus = 'private';
+                $status->privacyStatus = 'public';
 
                 $videoYoutube = new \Google_Service_YouTube_Video();
                 $videoYoutube->setSnippet($snippet);

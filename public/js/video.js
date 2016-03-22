@@ -318,7 +318,7 @@ var Video = (function() {
         
         $("#dialog").dialog('open');
         
-        $("#extract-youtube").submit(function(event) {
+        $("#extract-youtube").unbind('submit').submit(function(event) {
             event.preventDefault();
             if ( $('#extract-youtube').find('#link').val().trim() === '' ) {
                 return false;

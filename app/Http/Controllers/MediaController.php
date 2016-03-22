@@ -26,7 +26,7 @@ class MediaController extends Controller {
 
             $image = $this->media->createThumbnail($input, 'DRUM TEST MORE');
 
-            $image->save($realPathOutput);
+            $image->response();
             
         } catch (Exception $ex) {
             
