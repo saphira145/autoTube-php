@@ -66,8 +66,8 @@ var Video = (function() {
     body.on('click', '.wrapper-table .encode-modal-video-button', encodeVideoModal);
     body.on('click', '#encode-video-modal .encode-video', encodeVideo);
     
-    body.on('click', '.wrapper-table .upload-modal-video-button', uploadVideo);
-    
+    body.on('click', '.wrapper-table .upload-modal-video-button', uploadVideoModal);
+    body.on('click', '#upload-video-modal .upload-video', uploadVideo);
     
     
     function uploadImage() {
@@ -266,6 +266,38 @@ var Video = (function() {
             }
         })
     }
+    function uploadVideoModal() {
+        var id = $(this).attr('id');
+        
+        uploadModal.attr("vid", id);
+    }
+    
+    function uploadVideo() {
+        var id = uploadModal.attr('vid');
+        var actionGroup = $(".action[id="+ id +"]").closest('.action-group');
+        $.ajax({
+            url: '/video/upload',
+            type: 'GET',
+            data: {
+                id: id
+            },
+            beforeSend: function() {
+                actionGroup.addClass('ajax-dot-load');
+                actionGroup.find('.action').css('visibility', 'hidden');
+                uploadModal.modal('hide');
+            },
+            success: function(res) {
+                VideoTable.ajax.reload(null, false);
+            },
+            complete: function() {
+                actionGroup.removeClass('ajax-dot-load');
+                actionGroup.find('.action').css('visibility', 'visible');
+            },
+            error: function() {
+                
+            }
+        })
+    }
     
     function _focusErrorInput(form) {
         form.find(".has-error").find("input, text-area").each(function () {
@@ -376,28 +408,7 @@ var Video = (function() {
         })
     }
     
-    function uploadVideo() {
-        var id = $(this).attr('id');
-        $.ajax({
-            url: '/video/upload',
-            type: 'GET',
-            data: {
-                id: id
-            },
-            beforeSend: function() {
-                
-            },
-            success: function(res) {
-                
-            },
-            complete: function() {
-                
-            },
-            error: function() {
-                
-            }
-        })
-    }
+    
     
     return {
         getNotification : getNotification

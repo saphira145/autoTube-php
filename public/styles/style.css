@@ -289,6 +289,12 @@ fieldset[disabled] .btn-main.active {
 .progress .done {
     background-color: #5cb85c!important;
 }
+.progress .start {
+    background-color: #337ab7!important;
+}
+.text-danger {
+    font-weight: 700;
+}
 /*end project*/
 /*end video*/
 
