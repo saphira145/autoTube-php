@@ -200,12 +200,13 @@ class VideoController extends Controller
      * @return type
      */
     public function upload(Request $request) {
+        set_time_limit(0);
         $videoId = $request->input('id');
         
         $video = $this->video->findById($videoId);
         $videoPath = $video->store_at;
         $videoRealPath = public_path(ltrim($videoPath, '/'));
-        $thumbnailRealPath = public_path(ltrim($thumbnail, '/'));
+        
         $client = $this->session->get('client');
         $thumbnailRealPath = public_path(ltrim($video->thumbnail, '/'));
         $youtubeService = new \Google_Service_YouTube($client);
