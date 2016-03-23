@@ -19,12 +19,13 @@ class MediaController extends Controller {
     public function index(Request $request) {
         
         try {
-            $path = public_path('images/img002.jpg');
-            $input = $this->imageManager->make($path);
+            $realPathInput = public_path('images/img002.jpg');
+            $realPathOutput = public_path('uploads/thumbnails/' . uniqid() . '.jpg');
+            $input = $this->imageManager->make($realPathInput);
 
             $image = $this->media->createThumbnail($input, 'DRUM TEST MORE');
 
-            return $image->response();
+            return $image->save($realPathOutput);
             
         } catch (Exception $ex) {
             

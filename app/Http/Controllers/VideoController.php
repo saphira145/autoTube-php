@@ -10,6 +10,7 @@ use App\Log;
 use Carbon\Carbon;
 use Illuminate\Session\Store as Session;
 use Google_Client as GoogleClient;
+use Intervention\Image\ImageManager;
 
 class VideoController extends Controller
 {
@@ -27,9 +28,11 @@ class VideoController extends Controller
     protected $session;
     
     protected $client;
+    
+    protected $imageManager;
 
     public function __construct(Video $video, Validator $validator, Media $media,
-        Carbon $carbon, Log $log, Session $session, GoogleClient $client) 
+        Carbon $carbon, Log $log, Session $session, GoogleClient $client, ImageManager $imageManager) 
     {
         $this->video = $video;
         $this->validator = $validator;
@@ -39,6 +42,7 @@ class VideoController extends Controller
         $this->session = $session;
         $this->client = $client;
         $this->client->setAuthConfigFile(public_path('client_secret.json'));
+        $this->imageManager = $imageManager;
     }
 
     public function index() {
@@ -86,6 +90,16 @@ class VideoController extends Controller
                 $audioIds[] = $media->id;
             }
             
+            // Create thumbnail
+            $imagesPath = $request->imagesPath;
+            $realPathInput = public_path(ltrim($imagesPath[0], '/'));
+            $thumbnailName = uniqid() . '.jpg';
+            $realPathOutput = public_path('uploads/thumbnails/' . $thumbnailName);
+            $pathOutput = '/uploads/thumbnails/' . $thumbnailName;
+            $input = $this->imageManager->make($realPathInput);
+            $image = $this->media->createThumbnail($input, $params['thumbnail_text']);
+            $image->save($realPathOutput);
+            
             $this->video->create([
                 'title' => $params['title'],
                 'loop' => $params['loop'],
@@ -93,7 +107,8 @@ class VideoController extends Controller
                 'description' => $params['description'],
                 'images' => implode(',', $imageIds),
                 'audio' => implode(',', $audioIds),
-                'thumbnail_text' => $params['thumbnail_text']
+                'thumbnail_text' => $params['thumbnail_text'],
+                'thumbnail' => $pathOutput
             ]);
             
             return response()->json(['status' => 1, 'message' => 'Save video successfully']);
@@ -104,6 +119,11 @@ class VideoController extends Controller
         
     }
     
+    /**
+     * Encode video
+     * @param Request $requset
+     * @return type
+     */
     public function encode(Request $requset) {
         $id = $requset->input('id');
         $video = $this->video->findById($id);
@@ -155,6 +175,12 @@ class VideoController extends Controller
         }
     }
     
+    /**
+     * Remove video
+     * @param Request $request
+     * @param type $id
+     * @return type
+     */
     public function remove(Request $request, $id) {
         
         try {
@@ -167,12 +193,18 @@ class VideoController extends Controller
         
     }
     
+    /**
+     * Upload video
+     * @param Request $request
+     * @return type
+     */
     public function upload(Request $request) {
         $videoId = $request->input('id');
         
         $video = $this->video->findById($videoId);
         $videoPath = $video->store_at;
         $videoRealPath = public_path(ltrim($videoPath, '/'));
+        $thumbnailRealPath = public_path(ltrim($thumbnail, '/'));
         $client = $this->session->get('client');
         
         $youtubeService = new \Google_Service_YouTube($client);
@@ -189,27 +221,22 @@ class VideoController extends Controller
                 $status = new \Google_Service_YouTube_VideoStatus();
                 $status->privacyStatus = 'private';
 
-                $video = new \Google_Service_YouTube_Video();
-                $video->setSnippet($snippet);
-                $video->setStatus($status);
+                $videoYotube = new \Google_Service_YouTube_Video();
+                $videoYotube->setSnippet($snippet);
+                $videoYotube->setStatus($status);
                 $chunkSizeBytes = 1 * 1024 * 1024;
-
+                
                 // Setting the defer flag to true tells the client to return a request which can be called
                 // with ->execute(); instead of making the API call immediately.
                 $client->setDefer(true);
-
+                
+                $this->log->create(['content' => 'Start uploading video', 'type' => 'start', 'video_id' => $video->id]);
+                
                 // Create a request for the API's videos.insert method to create and upload the video.
-                $insertRequest = $youtubeService->videos->insert("status,snippet", $video);
+                $insertRequest = $youtubeService->videos->insert("status,snippet", $videoYotube);
 
                 // Create a MediaFileUpload object for resumable uploads.
-                $media = new \Google_Http_MediaFileUpload(
-                    $client,
-                    $insertRequest,
-                    'video/*',
-                    null,
-                    true,
-                    $chunkSizeBytes
-                );
+                $media = new \Google_Http_MediaFileUpload($client, $insertRequest, 'video/*', null, true, $chunkSizeBytes);
                 $media->setFileSize(filesize($videoRealPath));
 
                 // Read the media file and upload it.
@@ -224,6 +251,16 @@ class VideoController extends Controller
                 // If you want to make other calls after the file upload, set setDefer back to false
                 $client->setDefer(false);
                 
+//                $mediaImage = new Google_MediaFileUpload('image/png', null, true, $chunkSizeBytes);
+//                $mediaImage->setFileSize(filesize($thumbnailRealPath));
+                
+                
+                
+                // update log
+                $this->log->create(['content' => 'Upload video successfully', 'type' => 'done', 'video_id' => $video->id]);
+                
+                // update video
+                $this->video->where('id', $video->id)->update(['status' => 2]);
                 return response()->json(['status' => 1, 'message' => 'Upload successfully']);
                 
             } catch (Exception $ex) {

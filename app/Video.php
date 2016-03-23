@@ -12,7 +12,7 @@ class Video extends Model {
         2 => ['id' => 2, 'name' => 'Uploaded', 'class' => 'uploaded']
     ];
 
-    protected $fillable = ['title', 'description', 'loop', 'fade', 'audio', 'images', 'thumbnail_text', 'thumbnail'];
+    protected $fillable = ['title', 'description', 'loop', 'fade', 'audio', 'images', 'thumbnail_text', 'thumbnail', 'status'];
     
 
     /**
