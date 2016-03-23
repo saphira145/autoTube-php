@@ -41,6 +41,7 @@ class VideoController extends Controller
         $this->log = $log;
         $this->session = $session;
         $this->client = $client;
+        $this->imageManager = $imageManager;
         $this->client->setAuthConfigFile(public_path('client_secret.json'));
         $this->imageManager = $imageManager;
     }
@@ -90,13 +91,13 @@ class VideoController extends Controller
                 $audioIds[] = $media->id;
             }
             
-            // Create thumbnail
             $imagesPath = $request->imagesPath;
             $realPathInput = public_path(ltrim($imagesPath[0], '/'));
-            $thumbnailName = uniqid() . '.jpg';
-            $realPathOutput = public_path('uploads/thumbnails/' . $thumbnailName);
-            $pathOutput = '/uploads/thumbnails/' . $thumbnailName;
+            $name = uniqid() . '.jpg';
+            $realPathOutput = public_path('uploads/thumbnails/' . $name);
+            $pathOutput = '/uploads/thumbnails/' . $name;
             $input = $this->imageManager->make($realPathInput);
+            
             $image = $this->media->createThumbnail($input, $params['thumbnail_text']);
             $image->save($realPathOutput);
             
@@ -206,7 +207,7 @@ class VideoController extends Controller
         $videoRealPath = public_path(ltrim($videoPath, '/'));
         $thumbnailRealPath = public_path(ltrim($thumbnail, '/'));
         $client = $this->session->get('client');
-        
+        $thumbnailRealPath = public_path(ltrim($video->thumbnail, '/'));
         $youtubeService = new \Google_Service_YouTube($client);
         
         if ( $client->getAccessToken() ) {
@@ -219,16 +220,23 @@ class VideoController extends Controller
                 $snippet->setCategoryId(22);
 
                 $status = new \Google_Service_YouTube_VideoStatus();
-                $status->privacyStatus = 'private';
+                $status->privacyStatus = 'public';
+
 
                 $videoYotube = new \Google_Service_YouTube_Video();
                 $videoYotube->setSnippet($snippet);
                 $videoYotube->setStatus($status);
+
+                $videoYoutube = new \Google_Service_YouTube_Video();
+                $videoYoutube->setSnippet($snippet);
+                $videoYoutube->setStatus($status);
+
                 $chunkSizeBytes = 1 * 1024 * 1024;
                 
                 // Setting the defer flag to true tells the client to return a request which can be called
                 // with ->execute(); instead of making the API call immediately.
                 $client->setDefer(true);
+
                 
                 $this->log->create(['content' => 'Start uploading video', 'type' => 'start', 'video_id' => $video->id]);
                 
@@ -248,19 +256,34 @@ class VideoController extends Controller
                 }
                 fclose($handle);
 
+                // Create a MediaFileUpload with resumable uploads
+                
+                $setRequest = $youtubeService->thumbnails->set($status['id']);
+
+                // Create a MediaFileUpload object for resumable uploads.
+                $media = new \Google_Http_MediaFileUpload($client, $setRequest, 'image/jpeg', null, true, $chunkSizeBytes);
+                $media->setFileSize(filesize($thumbnailRealPath));
+
+                // Read the media file and upload it chunk by chunk.
+                $status = false;
+                $handle = fopen($thumbnailRealPath, "rb");
+                while (!$status && !feof($handle)) {
+                  $chunk = fread($handle, $chunkSizeBytes);
+                  $status = $media->nextChunk($chunk);
+                }
+
+                fclose($handle);
+
                 // If you want to make other calls after the file upload, set setDefer back to false
                 $client->setDefer(false);
+
                 
-//                $mediaImage = new Google_MediaFileUpload('image/png', null, true, $chunkSizeBytes);
-//                $mediaImage->setFileSize(filesize($thumbnailRealPath));
+                // Log
+                $this->log->create(['content' => 'Upload video successully', 'type' => 'done', 'video_id' => $video->id]);
                 
-                
-                
-                // update log
-                $this->log->create(['content' => 'Upload video successfully', 'type' => 'done', 'video_id' => $video->id]);
-                
-                // update video
+                // update store at for video    
                 $this->video->where('id', $video->id)->update(['status' => 2]);
+                
                 return response()->json(['status' => 1, 'message' => 'Upload successfully']);
                 
             } catch (Exception $ex) {

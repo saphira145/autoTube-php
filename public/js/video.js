@@ -287,7 +287,10 @@ var Video = (function() {
                 uploadModal.modal('hide');
             },
             success: function(res) {
-                VideoTable.ajax.reload(null, false);
+                if (res.status === 1) {
+                    VideoTable.ajax.reload(null, false);
+                }
+                
             },
             complete: function() {
                 actionGroup.removeClass('ajax-dot-load');
@@ -315,33 +318,45 @@ var Video = (function() {
         
         $("#dialog").dialog('open');
         
-        $("#extract-youtube").ajaxForm({
-            beforeSend: function() {
-                createModal.find('.modal-content').addClass('ajax-load');
-                $("#dialog").dialog('close');
-            },
-
-            success: function(res) {
-                if (res.status === 1) {
-                    var html = $("#audio-item").html();
-                    var template = Mustache.render(delimter + html, res.fileInfo);
-                    
-                    var container = $(".upload-audio-zone").find(".row");
-                    container.append(template);
-                    
-                    checkNoData(container, $(".item"));
-                }
-                
-                if (res.status === 0) {
-                    
-                }
-            },
-            complete: function() {
-                createModal.find('.modal-content').removeClass('ajax-load');
-            },
-            error: function() {
-                
+        $("#extract-youtube").unbind('submit').submit(function(event) {
+            event.preventDefault();
+            if ( $('#extract-youtube').find('#link').val().trim() === '' ) {
+                return false;
             }
+            
+            $.ajax({
+                url: '/media/extract',
+                type: 'POST',
+                data: $("#extract-youtube").serialize(),
+                beforeSend: function() {
+                    createModal.find('.modal-content').addClass('ajax-load');
+                    $("#dialog").dialog('close');
+                },
+
+                success: function(res) {
+
+                    if (res.status === 1) {
+                        var html = $("#audio-item").html();
+                        var template = Mustache.render(delimter + html, res.fileInfo);
+
+                        var container = $(".upload-audio-zone").find(".row");
+                        container.append(template);
+
+                        checkNoData(container, $(".item"));
+                    }
+
+                    if (res.status === 0) {
+
+                    }
+                },
+                complete: function() {
+                    createModal.find('.modal-content').removeClass('ajax-load');
+                },
+                error: function() {
+
+                }
+            });
+            
         })
     }   
     
@@ -367,7 +382,7 @@ var Video = (function() {
                             videoLogArray.push(logs[index].video_id);
                         } else {
                             $(".progress[vid="+ logs[index].video_id +"]")
-                                    .find('.progress-bar').addClass('done');
+                                    .find('.progress-bar').addClass(logs[index].content);
                             $(".progress[vid="+ logs[index].video_id +"]").find(".text").text(logs[index].content);
                         }
                     }

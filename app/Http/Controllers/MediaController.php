@@ -18,18 +18,6 @@ class MediaController extends Controller {
     }
     public function index(Request $request) {
         
-        try {
-            $realPathInput = public_path('images/img002.jpg');
-            $realPathOutput = public_path('uploads/thumbnails/' . uniqid() . '.jpg');
-            $input = $this->imageManager->make($realPathInput);
-
-            $image = $this->media->createThumbnail($input, 'DRUM TEST MORE');
-
-            return $image->save($realPathOutput);
-            
-        } catch (Exception $ex) {
-            
-        }
     }
 
     public function upload(Request $request) {

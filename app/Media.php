@@ -23,7 +23,7 @@ class Media extends Model {
         $width = $image->width();
        
         $image->rectangle(15, $height - 300, $width - 15, $height - 100, function($draw) {
-            $draw->background('rgba(255, 255, 255, 0.5)');
+            $draw->background('rgba(0, 0, 0, 0.7)');
         });
 
         $image->text($text, 600, $height - 150, function($font) {
